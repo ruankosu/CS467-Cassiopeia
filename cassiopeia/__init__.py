@@ -6,7 +6,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
-        SECRET_KEY='dev',
+        SECRET_KEY='SuperSecret9000',
         # store the database in the instance folder
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
     )
@@ -24,18 +24,18 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/')
-    def hello():
-        return 'Hello, World!'
+    # @app.route('/')
+    # def hello():
+    #     return 'Hello, World!'
 
     # register the database commands
     from cassiopeia import db
     db.init_app(app)
 
     # apply the blueprints to the app
-    # from . import auth, blog
-    # app.register_blueprint(auth.bp)
-    # app.register_blueprint(blog.bp)
+    from cassiopeia.views import auth, content
+    app.register_blueprint(auth.bp)
+    app.register_blueprint(content.bp)
 
     # make url_for('index') == url_for('blog.index')
     # in another app, you might define a separate main index here with
