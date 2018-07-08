@@ -1,14 +1,18 @@
 import functools
-
+import os
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from cassiopeia.db import get_db
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+template_dir = os.path.join(template_dir, "cassiopeia")
+template_dir = os.path.join(template_dir, "templates")
 
+bp = Blueprint('auth', __name__, url_prefix='/auth', template_folder=template_dir)
 
+# Clear or modify all routes below
 def login_required(view):
     """View decorator that redirects anonymous users to the login page."""
     @functools.wraps(view)
@@ -95,7 +99,7 @@ def login():
 
         flash(error)
 
-    return render_template('auth/login.html')
+    return render_template('../templates/auth/login.html')
 
 
 @bp.route('/logout')

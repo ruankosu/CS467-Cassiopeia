@@ -1,3 +1,4 @@
+import os
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
@@ -6,12 +7,16 @@ from werkzeug.exceptions import abort
 from cassiopeia.views.auth import login_required
 from cassiopeia.db import get_db
 
-bp = Blueprint('content', __name__)
+template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+template_dir = os.path.join(template_dir, "cassiopeia")
+template_dir = os.path.join(template_dir, "templates")
 
+bp = Blueprint('content', __name__, template_folder=template_dir)
 
+# Clear or modify all routes below
 @bp.route('/')
 def index():
-    return "Welcome to my blog!"
+    return render_template("base.html")
     # """Show all the posts, most recent first."""
     # db = get_db()
     # posts = db.execute(
@@ -20,7 +25,6 @@ def index():
     #     ' ORDER BY created DESC'
     # ).fetchall()
     # return render_template('blog/index.html', posts=posts)
-
 
 def get_post(id, check_author=True):
     """Get a post and its author by id.
