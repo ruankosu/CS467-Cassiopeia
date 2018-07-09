@@ -24,11 +24,17 @@ class Country(db.Model):
     # Need to set default flag image
     flag_image = db.Column(db.String(20), nullable=False, default='default.jpg')
 
+    def __repr__(self):
+        return f"Country('{self.name}', '{self.flag_image}')"
+
 
 # Category
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), unique=True, nullable=False)
+
+    def __repr(self):
+        return f"Category('{self.name}')"
 
 
 # Language
@@ -36,16 +42,22 @@ class Language(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), unique=True, nullable=False)
 
+    def __repr(self):
+        return f"Language('{self.name}')"
 
-# Locale
-class Locale(db.Model):
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    country_id = db.Column(db.Integer, db.ForeignKey('country.id'), nullable=False)
 
-# User_Language_Skill
-class User_Language_Skill(db.Model):
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    language_id = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=False)
+# Locale table (many-to-many relationship for language and country)
+locale = db.Table('locale',
+    db.Column('language_id', db.Integer, db.ForeignKey('language.id'), primary_key=True, nullable=False),
+    db.Column('country_id', db.Integer, db.ForeignKey('country.id'), primary_key=True, nullable=False)
+)
+
+# User_Lang_Skill table (many-to-many for user and foreign language)
+user_lang_skill = db.Table('user_lang_skill',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
+    db.Column('language_id', db.Integer, db.ForeignKey('language.id'), nullable=False),
+    db.Column('skill', db.Float, nullable=False)
+)
 
 
 # Content
@@ -57,11 +69,15 @@ class Content(db.Model):
     url
     level
 
+    def __repr(self):
+        return f"Content('{self.name}', '{self.pub_date}', '{self.url}', '{self.level}')"
 
-# Content_Category
-class Content_Category(db.Model):
-    content_id
-    category_id
+
+# Content_Category table (many-to-many relationship for content/category)
+content_category = db.Table('content_category',
+    db.Column('content_id', db.Integer, db.ForeignKey('content.id'), primary_key=True, nullable=False,
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True, nullable=False)
+)
 
 
 # Progress
@@ -72,3 +88,6 @@ class User(db.Model):
     read_date
     rating
     read_ct
+
+    def __repr(self):
+        return f"Progress('{self.read_date}', '{self.rating}', '{self.read_ct}')"
