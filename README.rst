@@ -20,15 +20,9 @@ Or on Windows cmd::
     py -3 -m venv venv
     venv\Scripts\activate.bat
 
-Install Flaskr::
 
-    pip install -e .
-
-Or if you are using the master branch, install Flask from source before
-installing Flaskr::
-
-    pip install -e ../..
-    pip install -e .
+Install requirements::
+    pip install -r requirements.txt
 
 
 Run
@@ -43,7 +37,6 @@ Run
 Or on Windows cmd::
 
     set FLASK_APP=cassiopeia
-    set FLASK_ENV=development
     flask run
 
 Open http://127.0.0.1:5000 in a browser.
