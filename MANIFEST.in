@@ -1,0 +1,2 @@
+recursive-include cassiopeia/templates *
+recursive-include cassiopeia/static *
