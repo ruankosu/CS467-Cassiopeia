@@ -1,7 +1,12 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask import Flask
 
-db = SQLAlchemy()
+app = Flask(__name__)
+app.config['SECRET_KEY'] = "secretkey"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+db = SQLAlchemy(app)
 
 # User
 class User(db.Model):
@@ -12,12 +17,13 @@ class User(db.Model):
     # We should create a function for password hashing
     password = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    native_language = db.Columng(db.Integer, db.ForeignKey('language.id', nullable=False)
+    native_language = db.Column(db.Integer, db.ForeignKey('language.id', nullable=False))
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
 
     def __repr__(self):
-        return f"User('{self.username}', '{self.first_name}', '{self.last_name}', '{self.email}')"
+        #return f"User('{self.username}', '{self.first_name}', '{self.last_name}', '{self.email}')"
+        return '<username=%r, first_name=%r, last_name=%r, email=%r>' % (self.username, self.first_name, self.last_name, self.email)
 
 
 # Country
@@ -28,7 +34,7 @@ class Country(db.Model):
     flag_image = db.Column(db.String(20), nullable=False, default='default.jpg')
 
     def __repr__(self):
-        return f"Country('{self.name}', '{self.flag_image}')"
+        return '<name=%r, flag_image=%r>' % (self.name, self.flag_image)
 
 
 # Category
@@ -37,7 +43,7 @@ class Category(db.Model):
     name = db.Column(db.String(60), unique=True, nullable=False)
 
     def __repr(self):
-        return f"Category('{self.name}')"
+        return '<name=%r>' %r self.name
 
 
 # Language
@@ -50,8 +56,8 @@ class Language(db.Model):
     # Allows us to get all content items in the given language
     content = db.relationship('Content', backref='language', lazy=True)
 
-    def __repr(self):
-        return f"Language('{self.name}')"
+    def __repr__(self):
+        return '<name=%r>' % self.name
 
 
 # Locale table (many-to-many relationship for language and country)
@@ -82,18 +88,18 @@ class Content(db.Model):
     progress = db.relationship('Progress', backref='content', lazy=True)
 
     def __repr(self):
-        return f"Content('{self.name}', '{self.pub_date}', '{self.url}', '{self.level}')"
+        return '<name=%r, pub_date=%r, url=%r, level=%r>' % (self.name, self.pub_date, self.url, self.level)
 
 
 # Content_Category table (many-to-many relationship for content/category)
 content_category = db.Table('content_category',
-    db.Column('content_id', db.Integer, db.ForeignKey('content.id'), primary_key=True, nullable=False,
+    db.Column('content_id', db.Integer, db.ForeignKey('content.id'), primary_key=True, nullable=False),
     db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True, nullable=False)
 )
 
 
 # Progress
-class User(db.Model):
+class Progress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -102,4 +108,4 @@ class User(db.Model):
     read_ct = db.Column(db.Integer, nullable=False)
 
     def __repr(self):
-        return f"Progress('{self.read_date}', '{self.rating}', '{self.read_ct}')"
+        return '<read_date=%r, rating=%r, read_ct=%r>' % (self.read_date, self.rating, self.read_ct)
