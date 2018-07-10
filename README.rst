@@ -22,6 +22,7 @@ Or on Windows cmd::
 
 
 Install requirements::
+
     pip install -r requirements.txt
 
 
