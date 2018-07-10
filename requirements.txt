@@ -1,9 +1,9 @@
 Flask
-#flask_login
+flask_login
 Flask-SQLAlchemy
-#requests
-#Flask-CORS
-#scikit-learn
-#numpy
-#pandas
-#mysqlclient
+requests
+Flask-CORS
+scikit-learn
+numpy
+pandas
+mysqlclient
