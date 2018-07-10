@@ -2,11 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask import Flask
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = "secretkey"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-
-db = SQLAlchemy(app)
+# Create database object
+db = SQLAlchemy()
 
 # User
 class User(db.Model):
@@ -17,12 +14,11 @@ class User(db.Model):
     # We should create a function for password hashing
     password = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    native_language = db.Column(db.Integer, db.ForeignKey('language.id', nullable=False))
+    native_language = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=False)
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
 
     def __repr__(self):
-        #return f"User('{self.username}', '{self.first_name}', '{self.last_name}', '{self.email}')"
         return '<username=%r, first_name=%r, last_name=%r, email=%r>' % (self.username, self.first_name, self.last_name, self.email)
 
 
@@ -43,7 +39,7 @@ class Category(db.Model):
     name = db.Column(db.String(60), unique=True, nullable=False)
 
     def __repr(self):
-        return '<name=%r>' %r self.name
+        return '<name=%r>' % self.name
 
 
 # Language
