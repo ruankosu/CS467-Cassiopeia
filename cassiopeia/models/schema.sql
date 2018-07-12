@@ -21,10 +21,18 @@ CREATE TABLE users (
     Email varchar(255) NOT NULL,
     Age int,
     NativeLanguageID int
-    ProgressID int
     PRIMARY KEY (ID),
     UNIQUE (LastName, FirstName)
 );
 
-
+CREATE TABLE content (
+    ID int NOT NULL AUTO_INCREMENT,
+    Name varchar(255) NOT NULL,
+    LanguageID int
+    PublishDate DateTime,
+    URL varchar(MAX),
+    Level float, 
+    PRIMARY KEY (ID),
+    FOREIGN KEY (LanguageID) REFERENCES language(ID)
+);
 
