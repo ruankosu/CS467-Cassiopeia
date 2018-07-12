@@ -6,4 +6,3 @@ Flask-CORS
 scikit-learn
 numpy
 pandas
-mysqlclient
