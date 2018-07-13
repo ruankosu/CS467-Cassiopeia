@@ -20,9 +20,9 @@ CREATE TABLE users (
     Password varchar(255) NOT NULL,
     Email varchar(255) NOT NULL,
     Age int,
-    NativeLanguageID int
+    LanguageID int
     PRIMARY KEY (ID),
-    UNIQUE (LastName, FirstName)
+    UNIQUE (UserName, Email)
 );
 
 CREATE TABLE content (
@@ -35,4 +35,44 @@ CREATE TABLE content (
     PRIMARY KEY (ID),
     FOREIGN KEY (LanguageID) REFERENCES language(ID)
 );
+
+CREATE TABLE locale (
+  LanguageID int NOT NULL,
+  CountryID int NOT NULL,
+  FOREIGN KEY (LanguageID) 
+    REFERENCES language(ID)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+
+  FOREIGN KEY (CountryID) 
+    REFERENCES country(ID) 
+    ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+CREATE TABLE user_language_skill (
+  UserID int NOT NULL,
+  LangaugeID int NOT NULL,
+  Skill float NOT NULL,
+
+  FOREIGN KEY (UserID) 
+    REFERENCES users(ID)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+
+  FOREIGN KEY (LangaugeID) 
+    REFERENCES language(ID) 
+    ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+CREATE TABLE content_category (
+  ContentID int NOT NULL,
+  CategoryID int NOT NULL
+
+  FOREIGN KEY (ContentID) 
+    REFERENCES content(ID)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+
+  FOREIGN KEY (CategoryID) 
+    REFERENCES category(ID) 
+    ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
 
