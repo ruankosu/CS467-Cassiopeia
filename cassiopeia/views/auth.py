@@ -67,11 +67,11 @@ def register():
                 (username, generate_password_hash(password))
             )
             db.commit()
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('signup/signup.html'))
 
         flash(error)
 
-    return render_template('auth/register.html')
+    return render_template('/register.html')
 
 
 @bp.route('/login', methods=('GET', 'POST'))
@@ -99,7 +99,7 @@ def login():
 
         flash(error)
 
-    return render_template('../templates/auth/login.html')
+    return render_template('auth/login.html')
 
 
 @bp.route('/logout')
