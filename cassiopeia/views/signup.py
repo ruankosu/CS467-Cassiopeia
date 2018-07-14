@@ -27,7 +27,46 @@ languages = [
 	}
 ]
 
+@app.route('/register')
+def register():
+    return render_template('signup/signup.html')
+
 
 @app.route('/register/language')
 def language():
-	return render_template('signup/language.html', langs=languages)
+    return render_template('signup/language.html', langs=languages)
+
+@app.route('/register/skill')
+def skill():
+    return render_template('signup/skill.html')
+
+categories = [
+	{
+        'name': 'Sports',
+		'icon': 'sports.png',
+	},
+	{
+        'name': 'Politics',
+		'icon': 'politics.png',
+	},
+	{
+		'name': 'Kids/Family',
+		'icon': 'kids_family.png',
+	},	
+    {
+		'name': 'Finance',
+		'icon': 'finance.png',
+	},	
+    {
+		'name': 'Health',
+		'icon': 'health.png',
+	},	{
+		'name': 'Education',
+		'icon': 'education.png',
+	}
+]
+    
+@app.route('/register/interests')
+def interests():
+    return render_template('signup/interests.html', categories=categories)
+
