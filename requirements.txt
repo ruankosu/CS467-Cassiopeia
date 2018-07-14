@@ -1,6 +1,7 @@
 Flask
 flask_login
 Flask-SQLAlchemy
+nltk
 requests
 Flask-CORS
 scikit-learn
