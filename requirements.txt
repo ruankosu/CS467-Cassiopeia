@@ -1,8 +1,10 @@
 Flask
 flask_login
 Flask-SQLAlchemy
+nltk
 requests
 Flask-CORS
 numpy
 pandas
 mysql-connector-python
+
