@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block css_style %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='signup.css') }}">	
+{% endblock css_style %}
+
+{% block script %} 
+  <script src="{{ url_for('static', filename='signup.js') }}"></script>
+{% endblock script %}
+
+{% block content %}
+		<hr>
+		<div class="container pt-3">
+		  <span class="text-center">
+			<form class="form-signin" method="post" >
+			  <h1 class="h3 mb-5 col-12 col-xs-push-12 font-weight-normal">Sign up</h1>
+        <div class="row">
+          <div class="container col-md-6 col-xs-12">
+            <img class="mb-4" src="/static/icon.png" alt="" height="144">
+          </div>
+          <div class="container col-md-6 col-xs-12">
+            <div class="row">
+              <label for="inputEmail" class="sr-only">Email address</label>
+              <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+              <label for="username" class="sr-only">Username</label>
+              <input type="text" id="username" class="form-control" placeholder="Username" required autofocus>
+              <label for="inputPassword" class="sr-only">Password</label>
+              <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+              <label for="confirmPassword" class="sr-only">Confirm password</label>
+              <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm password" onkeyup="checkPass(); return false;" required autofocus>
+              <span id="confirmMessage" class="confirmMessage"></span>
+              <button class="btn btn-lg btn-primary btn-block mt-3" type="submit">Create My Account</button>
+            </div>
+          </div>
+        </div>
+			  <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+			</form>
+		  </span>
+		</div>
+{% endblock content %}
+
+

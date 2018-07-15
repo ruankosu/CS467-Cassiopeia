@@ -4,6 +4,7 @@ Flask-SQLAlchemy
 nltk
 requests
 Flask-CORS
-scikit-learn
 numpy
 pandas
+mysql-connector-python
+

@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Flask
 
 # Create database object
-db = SQLAlchemy().Model
+db = SQLAlchemy()
 
 
 # User
@@ -74,18 +74,19 @@ user_lang_skill = db.Table('user_lang_skill',
 # Content
 class Content(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(60), nullable=False)
+    name = db.Column(db.Text, nullable=False)
     # one-to-many language to content
     language_id = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=False)
     pub_date = db.Column(db.DateTime, nullable=False)
     url = db.Column(db.String(2083), nullable=False)
+    body = db.Column(db.Text, nullable=False)
     level = db.Column(db.Float, nullable=False)
     # Allows us to get all progress objects related to a given piece of content
     # May not be used in our app at all
     progress = db.relationship('Progress', backref='content', lazy=True)
 
     def __repr(self):
-        return '<name=%r, pub_date=%r, url=%r, level=%r>' % (self.name, self.pub_date, self.url, self.level)
+        return '<name=%r, pub_date=%r, url=%r, body=%r, level=%r>' % (self.name, self.pub_date, self.url, self.body, self.level)
 
 
 # Content_Category table (many-to-many relationship for content/category)
@@ -99,7 +100,7 @@ content_category = db.Table('content_category',
 class Progress(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    content_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content_id = db.Column(db.Integer, db.ForeignKey('content.id'), nullable=False)
     read_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     rating = db.Column(db.Integer, nullable=False)
     read_ct = db.Column(db.Integer, nullable=False)
