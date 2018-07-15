@@ -31,10 +31,11 @@ def create_app(test_config=None):
     db.init_app(app)
 
     # apply the blueprints to the app
-    from cassiopeia.views import auth, content
+    from cassiopeia.views import auth, content, signup
     app.register_blueprint(auth.bp)
-    app.register_blueprint(content.bp)
 
+    app.register_blueprint(content.app)
+    app.register_blueprint(signup.app)
     
     return app
 
