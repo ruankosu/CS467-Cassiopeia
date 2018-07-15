@@ -9,8 +9,9 @@ def create_app(test_config=None):
         SECRET_KEY='SuperSecret9000',
 
         # store the database in the instance folder
-        DATABASE=""
     )
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///models/site.db'
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -26,13 +27,15 @@ def create_app(test_config=None):
         pass
 
     # register the database commands
-    from cassiopeia import db
+    from cassiopeia.models.models import db
     db.init_app(app)
 
     # apply the blueprints to the app
     from cassiopeia.views import auth, content, signup
     app.register_blueprint(auth.bp)
+
     app.register_blueprint(content.app)
     app.register_blueprint(signup.app)
     
     return app
+

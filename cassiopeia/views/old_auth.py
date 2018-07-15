@@ -1,19 +1,16 @@
 import functools
-import os
+
 from flask import (
-        Blueprint, flash, g, redirect, render_template, request, session, url_for
+    Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
+from werkzeug.security import check_password_hash, generate_password_hash
+#from cassiopeia.db import get_db
 
-template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-template_dir = os.path.join(template_dir, "cassiopeia")
-template_dir = os.path.join(template_dir, "templates")
-
-bp = Blueprint('auth', __name__, url_prefix='/auth', template_folder=template_dir)
+bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
-# Clear or modify all routes below
 def login_required(view):
-    """View decorator that redirects anonymous users to the login page."""
+"""View decorator that redirects anonymous users to the login page."""
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
@@ -66,11 +63,11 @@ def register():
                 (username, generate_password_hash(password))
             )
             db.commit()
-            return redirect(url_for('signup/signup.html'))
+            return redirect(url_for('auth.login'))
 
         flash(error)
 
-    return render_template('/register.html')
+    return render_template('auth/register.html')
 
 
 @bp.route('/login', methods=('GET', 'POST'))
@@ -79,7 +76,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
+        #db = get_db()
         error = None
         user = db.execute(
             'SELECT * FROM user WHERE username = ?', (username,)
@@ -106,4 +103,3 @@ def logout():
     """Clear the current session, including the stored user id."""
     session.clear()
     return redirect(url_for('index'))
-

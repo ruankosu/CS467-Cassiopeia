@@ -1,15 +1,12 @@
 import os
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+            Blueprint, flash, g, redirect, render_template, request, url_for
 )
-from werkzeug.exceptions import abort
-
-from cassiopeia.views.auth import login_required
-from cassiopeia.db import get_db
 
 template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 template_dir = os.path.join(template_dir, "cassiopeia")
 template_dir = os.path.join(template_dir, "templates")
+
 
 app = Blueprint('content', __name__, template_folder=template_dir)
 
