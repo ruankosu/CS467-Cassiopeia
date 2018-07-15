@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block css_style %}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='skill.css') }}">	
+{% endblock css_style %}
+
+{% block script %} 
+  <script src="{{ url_for('static', filename='skill.js') }}"></script>
+{% endblock script %}
+
+{% block content %}
+    <div class="container pt-5">
+      <div class="container mt-5 mb-5">
+        <h1>Step 2: Choose your level</p>
+      </div>
+      
+
+
+      <form method="post" class="col-12">
+        <div class="form-check h5">
+          <input class="form-check-input" type="radio" name="skill" id="beginner" value="beginner">
+          <label class="form-check-label" for="beginner">Beginner</label>
+        </div>
+        <div class="form-check h5">
+          <input class="form-check-input" type="radio" name="skill" id="intermediate" value="intermediate">
+          <label class="form-check-label" for="intermediate">Intermediate</label>
+        </div>
+        <div class="form-check h5">
+          <input class="form-check-input" type="radio" name="skill" id="advanced" value="advanced">
+          <label class="form-check-label" for="advanced">Advanced</label>
+        </div>
+        <div class="container-fluid mt-3">
+          <div class="row">
+            <button class="btn btn-lg btn-primary col-xs-6 offset-xs-3 col-md-4 offset-md-4 col-lg-3 offset-lg-9" type="submit">Next</button>
+          </div>
+        </div>
+      </form>
+
+    </div>
+{% endblock content %}

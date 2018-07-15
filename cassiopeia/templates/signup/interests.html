@@ -1,31 +1,31 @@
 {% extends "base.html" %}
 
 {% block css_style %}
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='language.css') }}">	
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='interests.css') }}">	
 {% endblock css_style %}
 
 {% block script %} 
-  <script src="{{ url_for('static', filename='language.js') }}"></script>
+  <script src="{{ url_for('static', filename='interests.js') }}"></script>
 {% endblock script %}
 
 {% block content %}
     <div class="container pt-5">
       <div class="container mt-5 mb-5">
-        <h1>Step 1: Choose your langauge</p>
+        <h1>Step 3: Select your interest</p>
       </div>
       <div class="container mt-3">
         <div class="row">
           <form method="post" class="col-12">
              <div class="form-row btn-group btn-group-toggle" data-toggle="buttons">
-              {% for lang in langs %}
+              {% for cat in categories %}
 
               <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 mt-3">
-                <label class="btn btn-outline-info" for="{{ lang.name }} {{ lang.name ~ '_icon'}}">
+                <label class="btn btn-outline-info" for="{{ cat.name }} {{ cat.name ~ '_img' }}">
                   <div class="col-12">
-                    <img class="container-fluid h-25 mt-3" id="{{ lang.name ~ '_icon'}}" src="{{ url_for('static', filename=lang.flag) }}" >
+                    <img class="img-circle h-25 mt-3" id="{{ cat.name ~ '_img' }}" src="{{ url_for('static', filename=cat.icon) }}" >
                   </div>
                   <div class="col-12">
-                    <input style="display: none" type="radio" name="lang" id="{{ lang.name }}" value="{{ lang.name }}">{{ lang.name}}
+                    <input style="display: none" type="checkbox" name="categories" id="{{ cat.name }}" value="{{ cat.name }}">{{ cat.name}}
                   </div>
                 </label>
               </div>
