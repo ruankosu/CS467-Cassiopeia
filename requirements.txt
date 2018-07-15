@@ -3,6 +3,6 @@ flask_login
 Flask-SQLAlchemy
 requests
 Flask-CORS
-scikit-learn
 numpy
 pandas
+mysql-connector-python
