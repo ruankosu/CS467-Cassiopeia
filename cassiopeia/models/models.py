@@ -26,12 +26,14 @@ class User(db.Model):
 # Country
 class Country(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(60), unique=True, nullable=False)
+    name = db.Column(db.String(255), unique=True, nullable=False)
+    alpha2code = db.Column(db.String(2), unique=True, nullable=False)
+    alpha3code = db.Column(db.String(3), unique=True, nullable=False)
     # Need to set default flag image
-    flag_image = db.Column(db.String(20), nullable=False, default='default.jpg')
+    flag_image = db.Column(db.String(255), nullable=False, default='default.jpg')
 
     def __repr__(self):
-        return '<name=%r, flag_image=%r>' % (self.name, self.flag_image)
+        return '<name=%r, alpha2code=%r, alpha3code=%r, flag_image=%r>' % (self.name, self.alpha2code, self.alpha3code, self.flag_image)
 
 
 # Category
@@ -47,6 +49,9 @@ class Category(db.Model):
 class Language(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), unique=True, nullable=False)
+    iso639_1 = db.Column(db.String(2), unique=True, nullable=False)
+    iso639_2 = db.Column(db.String(3), unique=True, nullable=False)
+    countries = db.relationship('Country', secondary='locale', backref='languages', lazy='dynamic')
     # This relationship backref may not be used in practice, allows
     # us to get all users whose native language matches the lang in question
     users = db.relationship('User', backref='language', lazy=True)
@@ -54,13 +59,13 @@ class Language(db.Model):
     content = db.relationship('Content', backref='language', lazy=True)
 
     def __repr__(self):
-        return '<name=%r>' % self.name
+        return '<name=%r iso639_1=%r, iso639_2=%r>' % (self.name, self.iso639_1, self.iso639_2)
 
 
 # Locale table (many-to-many relationship for language and country)
 locale = db.Table('locale',
-    db.Column('language_id', db.Integer, db.ForeignKey('language.id'), primary_key=True, nullable=False),
-    db.Column('country_id', db.Integer, db.ForeignKey('country.id'), primary_key=True, nullable=False)
+    db.Column('language_code', db.String(3), db.ForeignKey('language.iso639_2'), nullable=False),
+    db.Column('country_code', db.String(3), db.ForeignKey('country.alpha3code'), nullable=False)
 )
 
 # User_Lang_Skill table (many-to-many for user and foreign language)
