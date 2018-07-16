@@ -5,7 +5,6 @@ from flask import Flask
 # Create database object
 db = SQLAlchemy()
 
-
 # User
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
