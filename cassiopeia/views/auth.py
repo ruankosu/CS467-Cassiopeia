@@ -3,107 +3,50 @@ import os
 from flask import (
         Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
+from flask_bcrypt import Bcrypt
+# Helps handle user sessions
+from flask_login import login_user, current_user, logout_user, login_required
 
-template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+'''template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 template_dir = os.path.join(template_dir, "cassiopeia")
-template_dir = os.path.join(template_dir, "templates")
+template_dir = os.path.join(template_dir, "templates")'''
 
-bp = Blueprint('auth', __name__, url_prefix='/auth', template_folder=template_dir)
+auth = Blueprint('auth', __name__, url_prefix='/auth', template_folder=template_dir)
+bcrypt = Bcrypt()
 
-
-# Clear or modify all routes below
-def login_required(view):
-    """View decorator that redirects anonymous users to the login page."""
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for('auth.login'))
-
-        return view(**kwargs)
-
-    return wrapped_view
-
-@bp.before_app_request
-def load_logged_in_user():
-    """If a user id is stored in the session, load the user object from
-    the database into ``g.user``."""
-    user_id = session.get('user_id')
-
-    if user_id is None:
-        g.user = None
-    else:
-        g.user = get_db().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id,)
-        ).fetchone()
-
-
-@bp.route('/register', methods=('GET', 'POST'))
+@auth.route("/register", method=['GET', 'POST'])
 def register():
-    """Register a new user.
-    Validates that the username is not already taken. Hashes the
-    password for security.
-    """
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        db = get_db()
-        error = None
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
 
-        if not username:
-            error = 'Username is required.'
-        elif not password:
-            error = 'Password is required.'
-        elif db.execute(
-            'SELECT id FROM user WHERE username = ?', (username,)
-        ).fetchone() is not None:
-            error = 'User {0} is already registered.'.format(username)
-
-        if error is None:
-            # the name is available, store it in the database and go to
-            # the login page
-            db.execute(
-                'INSERT INTO user (username, password) VALUES (?, ?)',
-                (username, generate_password_hash(password))
-            )
-            db.commit()
-            return redirect(url_for('signup/signup.html'))
-
-        flash(error)
-
-    return render_template('/register.html')
+    ''' If form is validated after being submitted,
+        Create new user with given form data
+        add and commit user
+        flash message account creation successful
+        return to login page
+    return the rendered template for registration'''
 
 
-@bp.route('/login', methods=('GET', 'POST'))
+@auth.route("/login", method=['GET', 'POST'])
 def login():
-    """Log in a registered user by adding the user id to the session."""
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        db = get_db()
-        error = None
-        user = db.execute(
-            'SELECT * FROM user WHERE username = ?', (username,)
-        ).fetchone()
+    '''Check if current user is authenticated
+        if so, redirect to home page
 
-        if user is None:
-            error = 'Incorrect username.'
-        elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
-
-        if error is None:
-            # store the user id in a new session and return to the index
-            session.clear()
-            session['user_id'] = user['id']
-            return redirect(url_for('index'))
-
-        flash(error)
-
-    return render_template('auth/login.html')
+        else, on form submission and validation,
+        Get the username for given email
+        If the entered password matches the user's password (ret'd from db)
+            login_user for session
+        redirect to home
+        else flash unsuccessful login message
+        render login template'''
 
 
-@bp.route('/logout')
+@auth.route("/logout")
 def logout():
-    """Clear the current session, including the stored user id."""
-    session.clear()
-    return redirect(url_for('index'))
+    logout_user()
+    return redirect(url_for('main.home'))
+
+
+'''@auth.route("/user_agreement")
+   @auth.route("/forgot_password")
 
