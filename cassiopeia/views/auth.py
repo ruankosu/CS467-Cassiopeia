@@ -3,20 +3,38 @@ import os
 from flask import (
         Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from cassiopeia.__init__ import bcrypt
+from cassiopeia.models.models import User
+from cassiopeia import db
+
+# Register database context
+db.get_db()
+
 # Helps handle user sessions
 from flask_login import login_user, current_user, logout_user, login_required
 
-'''template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-template_dir = os.path.join(template_dir, "cassiopeia")
-template_dir = os.path.join(template_dir, "templates")'''
+auth = Blueprint('auth', __name__)
 
-auth = Blueprint('auth', __name__, url_prefix='/auth', template_folder=template_dir)
 
-@auth.route("/register", method=['GET', 'POST'])
+# Routes
+@auth.route("/register", method=['POST'])
 def register():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
+    # Confirm username is unique
+    username = User.query.filter_by(request.form('username')).first()
+    if username:
+        flash('Username already in use. Please choose a different one.', 'error')
+        #return redirect(url_for(''))
+
+    # Confirm email is unique
+    username = User.query.filter_by(request.form('inputEmail')).first()
+    if username:
+        flash('Email already associated with an account. Please log in or use a different email address.', 'error')
+        #return redirect(url_for(''))
+
+    # Confirm registration password matches confirmation password
+    # If password != confirmation password, flash error
+    password = request.form('inputPassword')
+    if password != request.form('confirmPassword'):
+        flash('Passwords entered do not match. Please correct and resubmit.', 'error')
 
     ''' If form is validated after being submitted,
         Create new user with given form data
@@ -43,7 +61,7 @@ def login():
 @auth.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('main.home'))
+    return redirect(url_for(''))
 
 
 '''@auth.route("/user_agreement")
