@@ -32,7 +32,7 @@ def create_app(test_config=None):
 
     # register bcrypt object
     from flask_bcrypt import Bcrypt
-    bcrypt = Bcrypt()
+    bcrypt = Bcrypt(app)
 
 
     # apply the blueprints to the app
