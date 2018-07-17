@@ -3,6 +3,8 @@ import os
 from flask import (
         Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
+from cassiopeia.models.models import User
+from cassiopeia import db
 
 template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 template_dir = os.path.join(template_dir, "cassiopeia")
