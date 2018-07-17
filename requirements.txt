@@ -7,4 +7,4 @@ Flask-CORS
 numpy
 pandas
 mysql-connector-python
-
+eventregistry
