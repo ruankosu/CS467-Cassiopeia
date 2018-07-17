@@ -9,12 +9,10 @@ db = SQLAlchemy()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
-    first_name = db.Column(db.String(30), nullable=False)
-    last_name = db.Column(db.String(30), nullable=False)
     # We should create a function for password hashing
     password = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    native_language = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=False)
+    native_language = db.Column(db.Integer, db.ForeignKey('language.id'))
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
 
