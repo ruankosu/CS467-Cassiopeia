@@ -3,7 +3,7 @@ import os
 from flask import (
         Blueprint, flash, g, redirect, render_template, request, session, url_for
 )
-from flask_bcrypt import Bcrypt
+from cassiopeia.__init__ import bcrypt
 # Helps handle user sessions
 from flask_login import login_user, current_user, logout_user, login_required
 
@@ -12,7 +12,6 @@ template_dir = os.path.join(template_dir, "cassiopeia")
 template_dir = os.path.join(template_dir, "templates")'''
 
 auth = Blueprint('auth', __name__, url_prefix='/auth', template_folder=template_dir)
-bcrypt = Bcrypt()
 
 @auth.route("/register", method=['GET', 'POST'])
 def register():
@@ -48,5 +47,5 @@ def logout():
 
 
 '''@auth.route("/user_agreement")
-   @auth.route("/forgot_password")
+   @auth.route("/forgot_password")'''
 

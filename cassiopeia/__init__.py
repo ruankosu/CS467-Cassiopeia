@@ -30,12 +30,17 @@ def create_app(test_config=None):
     from cassiopeia.models.models import db
     db.init_app(app)
 
+    # register bcrypt object
+    from flask_bcrypt import Bcrypt
+    bcrypt = Bcrypt()
+
+
     # apply the blueprints to the app
     from cassiopeia.views import auth, content, signup
     app.register_blueprint(auth.bp)
 
     app.register_blueprint(content.app)
     app.register_blueprint(signup.app)
-    
+
     return app
 
