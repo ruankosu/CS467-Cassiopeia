@@ -6,12 +6,11 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
-        SECRET_KEY='SuperSecret9000',
-
-        # store the database in the instance folder
+        SECRET_KEY='SuperSecret9000'
     )
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://kruan@35.230.15.28/cassiopeia_prod?charset=utf8mb4'
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -28,6 +27,7 @@ def create_app(test_config=None):
 
     # register the database commands
     from cassiopeia import db
+    #from cassiopeia.models.models import db
     db.init_app(app)
 
     # register bcrypt object
@@ -38,7 +38,6 @@ def create_app(test_config=None):
     # apply the blueprints to the app
     from cassiopeia.views import auth, content, signup
     app.register_blueprint(auth.auth)
-
     app.register_blueprint(content.app)
     app.register_blueprint(signup.app)
 

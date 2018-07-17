@@ -2,15 +2,12 @@ import functools
 import os
 import sys
 from flask import (
-        Blueprint, flash, g, redirect, render_template, request, session, url_for
+        Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
 )
-from cassiopeia.models.models import db
+#from cassiopeia.models.models import db
 from cassiopeia.models.models import User
 #from cassiopeia import bcrypt
-#from cassiopeia import db
-
-# Register database context
-# db.get_db()
+from cassiopeia import db
 
 # Helps handle user sessions
 from flask_login import login_user, current_user, logout_user, login_required
@@ -21,6 +18,7 @@ auth = Blueprint('auth', __name__)
 # Routes
 @auth.route("/register", methods=['GET', 'POST'])
 def register():
+    mysql = db.get_db()
     if request.method == 'POST':
         '''# Confirm username is unique
         username = request.form['username']
@@ -48,12 +46,13 @@ def register():
         print(email+' '+username+' '+password, file=sys.stderr)
         #hashed_pwd = bcrypt.generate_password_hash(password).decode('utf-8')
         new_user = User(username=username, email=email, password=password)
-        db.session.add(new_user)
-        db.session.commit()
+        mysql.session.add(new_user)
+        mysql.session.commit()
         print("Committed to db successfully", file=sys.stderr)
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('auth.login'))
     return render_template('signup/signup.html', title='Sign Up')
+
 
 
 @auth.route("/login", methods=['GET', 'POST'])
