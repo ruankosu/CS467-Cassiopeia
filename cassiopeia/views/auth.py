@@ -6,8 +6,7 @@ from flask import (
 )
 #from cassiopeia.models.models import db
 from cassiopeia.models.models import User
-#from cassiopeia import bcrypt
-from cassiopeia import db
+from cassiopeia import db, global_bcrypt
 
 # Helps handle user sessions
 from flask_login import login_user, current_user, logout_user, login_required
@@ -19,8 +18,10 @@ auth = Blueprint('auth', __name__)
 @auth.route("/register", methods=['GET', 'POST'])
 def register():
     mysql = db.get_db()
+    '''if current_user.is_authenticated:
+        return redirect(url_for('home.home'))'''
     if request.method == 'POST':
-        '''# Confirm username is unique
+        # Confirm username is unique
         username = request.form['username']
         already_taken = User.query.filter_by(username=username).first()
         if already_taken:
@@ -29,7 +30,7 @@ def register():
 
         # Confirm email is unique
         email = request.form['inputEmail']
-        email_in_use = User.query.filter_by(email).first()
+        email_in_use = User.query.filter_by(email=email).first()
         if email_in_use:
             flash('Email already associated with an account. Please log in or use a different email address.', 'error')
             #return redirect(url_for(''))
@@ -40,33 +41,43 @@ def register():
         if password != request.form['confirmPassword']:
             flash('Passwords entered do not match. Please correct and resubmit.', 'error')
             # redirect?'''
-        email = request.form['inputEmail']
-        username = request.form['username']
         password = request.form['inputPassword']
-        print(email+' '+username+' '+password, file=sys.stderr)
+        hashed_pwd = global_bcrypt.generate_password_hash(password).decode('utf-8')
+        print(email+' '+username+' '+hashed_pwd, file=sys.stderr)
         #hashed_pwd = bcrypt.generate_password_hash(password).decode('utf-8')
-        new_user = User(username=username, email=email, password=password)
+        new_user = User(username=username, email=email, password=password, native_language=-1)
         mysql.session.add(new_user)
         mysql.session.commit()
         print("Committed to db successfully", file=sys.stderr)
-        flash('Your account has been created! You are now able to log in', 'success')
-        return redirect(url_for('auth.login'))
+        flash('Account created! Please set your preferences.', 'success')
+        return redirect(url_for('signup.language'))
     return render_template('signup/signup.html', title='Sign Up')
 
 
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
-    '''Check if current user is authenticated
-        if so, redirect to home page
+    '''if current_user.is_authenticated:
+        return redirect(url_for('home.home'))'''
 
-        else, on form submission and validation,
-        Get the username for given email
-        If the entered password matches the user's password (ret'd from db)
-            login_user for session
-        redirect to home
-        else flash unsuccessful login message
-        render login template'''
+    if post_method == 'POST':
+        # Check email is in db. If not, flash message and ask to re-enter
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user:
+            # Get password for user given email. Check password is same.
+            password_entered = request.form['password']
+            user_password = user.password
+            #if bcrypt.check_password_hash(user.password, password_entered):
+                #login_user(user)
+                # Flash success message
+                #flash('Login successful.', 'success')
+
+
+            # Redirect to home
+            return redirect(url_for('home.home'))
+        else:
+            flash('Login unsuccessful. Please check email and password', 'danger')
     return render_template('auth/login.html', title='Log In')
 
 

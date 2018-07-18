@@ -1,5 +1,9 @@
 import os
 from flask import Flask
+from flask_bcrypt import Bcrypt
+
+# register bcrypt object
+global_bcrypt = Bcrypt()
 
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
@@ -30,9 +34,6 @@ def create_app(test_config=None):
     #from cassiopeia.models.models import db
     db.init_app(app)
 
-    # register bcrypt object
-    from flask_bcrypt import Bcrypt
-    bcrypt = Bcrypt(app)
 
 
     # apply the blueprints to the app
