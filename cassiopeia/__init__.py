@@ -18,7 +18,7 @@ def create_app(test_config=None):
     )
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://kruan@35.230.15.28/cassiopeia_prod?charset=utf8mb4'
-    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -37,6 +37,7 @@ def create_app(test_config=None):
     from cassiopeia import db
     db.init_app(app)
     login_manager.init_app(app)
+    global_bcrypt.init_app(app)
 
     # apply the blueprints to the app
     from cassiopeia.views import auth, content, signup
