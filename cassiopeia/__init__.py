@@ -1,9 +1,13 @@
 import os
 from flask import Flask
 from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 
 # register bcrypt object
 global_bcrypt = Bcrypt()
+
+# create login manager for sessions
+login_manager = LoginManager()
 
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
@@ -31,10 +35,7 @@ def create_app(test_config=None):
 
     # register the database commands
     from cassiopeia import db
-    #from cassiopeia.models.models import db
     db.init_app(app)
-
-
 
     # apply the blueprints to the app
     from cassiopeia.views import auth, content, signup
