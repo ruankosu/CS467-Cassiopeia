@@ -32,3 +32,17 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()], render_kw={"placeholder": "Password"})
     remember = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
+
+    # Form validation functions
+
+    def validate_username(self, username):
+        # Check username not already taken
+        user = User.query.filter_by(username=username.data).first()
+        if user:
+            raise ValidationError('Username already in use. Please choose another.')
+
+    def validate_email(self, email):
+        # Check email not already taken
+        email = User.query.filter_by(email=email.data).first()
+        if email:
+            raise ValidationError('Email associated with an existing account. Please use another.')
