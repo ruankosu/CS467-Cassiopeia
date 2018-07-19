@@ -20,6 +20,7 @@ auth = Blueprint('auth', __name__)
 def register():
     form = RegistrationForm()
     mysql = db.get_db()
+    flash('Attempt FLash!', 'success')
     if form.validate_on_submit():
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('signup.language'))
