@@ -28,6 +28,7 @@ def register():
         mysql.session.add(user)
         mysql.session.commit()
         # Log in the user!!!
+        login_user(user)
         flash(f'Account has been created! You are now logged in. Please set your preferences now.', 'success')
         return redirect(url_for('signup.language'))
     return render_template('signup/signup.html', title='Sign Up', form=form)
@@ -39,9 +40,12 @@ def login():
     form = LoginForm(request.form)
     mysql = db.get_db()
     if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
         return redirect(url_for('home.home'))
-        #else:
-            #flash('Login unsuccessful. Please check email and password', 'danger')
+        else:
+            flash('Login unsuccessful. Please check email and password', 'danger')
     return render_template('auth/login.html', title='Log In', form=form)
 
 
