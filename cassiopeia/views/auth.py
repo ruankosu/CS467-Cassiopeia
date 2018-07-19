@@ -6,7 +6,7 @@ from flask import (
 )
 #from cassiopeia.models.models import db
 from cassiopeia.models.models import User
-from cassiopeia import db, global_bcrypt
+from cassiopeia import db, global_bcrypt, login_manager
 from cassiopeia.views.signup_forms import (RegistrationForm, LoginForm)
 
 # Helps handle user sessions
@@ -47,7 +47,7 @@ def login():
     mysql = db.get_db()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
+        if user and global_bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             return redirect(url_for('home.home'))
         else:
