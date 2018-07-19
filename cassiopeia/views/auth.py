@@ -29,13 +29,13 @@ def register():
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
+    form = LoginForm(request.form)
     mysql = db.get_db()
     if form.validate_on_submit():
         return redirect(url_for('home.home'))
     else:
         flash('Login unsuccessful. Please check email and password', 'danger')
-    return render_template('auth/login.html', title='Log In')
+    return render_template('auth/login.html', title='Log In', form=form)
 
 
 '''@auth.route("/logout")
