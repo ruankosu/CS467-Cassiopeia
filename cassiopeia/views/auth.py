@@ -55,13 +55,13 @@ def login():
     return render_template('auth/login.html', title='Log In', form=form)
 
 
-'''@auth.route("/logout")
+@auth.route("/logout")
 def logout():
     logout_user()
-    return
-    #return redirect(url_for(''))
+    # The following URL may need to be updated for correct routing ***
+    return redirect(url_for('home.home'))
 
 
-@auth.route("/user_agreement")
+'''@auth.route("/user_agreement")
    @auth.route("/forgot_password")'''
 
