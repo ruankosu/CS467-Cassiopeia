@@ -26,6 +26,7 @@ def register():
         already_taken = User.query.filter_by(username=username).first()
         if already_taken:
             flash('Username already in use. Please choose a different one.', 'error')
+            #reload form
             #return redirect(url_for(''))
 
         # Confirm email is unique
@@ -44,8 +45,7 @@ def register():
         password = request.form['inputPassword']
         hashed_pwd = global_bcrypt.generate_password_hash(password).decode('utf-8')
         print(email+' '+username+' '+hashed_pwd, file=sys.stderr)
-        #hashed_pwd = bcrypt.generate_password_hash(password).decode('utf-8')
-        new_user = User(username=username, email=email, password=password, native_language=-1)
+        new_user = User(username=username, email=email, password=password)
         mysql.session.add(new_user)
         mysql.session.commit()
         print("Committed to db successfully", file=sys.stderr)
