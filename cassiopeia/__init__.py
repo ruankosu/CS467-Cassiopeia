@@ -36,6 +36,7 @@ def create_app(test_config=None):
     # register the database commands
     from cassiopeia import db
     db.init_app(app)
+    login_manager.init_app(app)
 
     # apply the blueprints to the app
     from cassiopeia.views import auth, content, signup
