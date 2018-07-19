@@ -18,9 +18,8 @@ auth = Blueprint('auth', __name__)
 # Routes
 @auth.route("/register", methods=['GET', 'POST'])
 def register():
-    form = RegistrationForm()
+    form = RegistrationForm(request.form)
     mysql = db.get_db()
-    flash('Attempt FLash!', 'success')
     if form.validate_on_submit():
         flash(f'Account created for {form.username.data}!', 'success')
         return redirect(url_for('signup.language'))
@@ -28,15 +27,18 @@ def register():
 
 
 
-'''@auth.route("/login", methods=['GET', 'POST'])
+@auth.route("/login", methods=['GET', 'POST'])
 def login():
-            return redirect(url_for('home.home'))
-        else:
-            flash('Login unsuccessful. Please check email and password', 'danger')
+    form = LoginForm()
+    mysql = db.get_db()
+    if form.validate_on_submit():
+        return redirect(url_for('home.home'))
+    else:
+        flash('Login unsuccessful. Please check email and password', 'danger')
     return render_template('auth/login.html', title='Log In')
 
 
-@auth.route("/logout")
+'''@auth.route("/logout")
 def logout():
     logout_user()
     return
