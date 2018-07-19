@@ -18,6 +18,9 @@ auth = Blueprint('auth', __name__)
 # Routes
 @auth.route("/register", methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        # URL may need to be altered to correct location
+        return redirect(url_for('home.home'))
     form = RegistrationForm(request.form)
     mysql = db.get_db()
     if form.validate_on_submit():
@@ -37,6 +40,9 @@ def register():
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        # URL may need to be altered to correct location
+        return redirect(url_for('home.home'))
     form = LoginForm(request.form)
     mysql = db.get_db()
     if form.validate_on_submit():
