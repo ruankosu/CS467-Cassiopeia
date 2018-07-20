@@ -29,9 +29,10 @@ def register():
         user = User(username=form.username.data, email=form.email.data, password=hashed_pw)
         mysql.session.add(user)
         mysql.session.commit()
-        # Log in the user!!!
+        # Log in the user
         login_user(user)
         flash(f'Account has been created! You are now logged in. Please set your preferences now.', 'success')
+        # Redirect to preferences dialogue
         return redirect(url_for('signup.language'))
     return render_template('signup/signup.html', title='Sign Up', form=form)
 
@@ -51,6 +52,7 @@ def login():
         else:
             flash('Login unsuccessful. Please check email and password', 'danger')
     return render_template('auth/login.html', title='Log In', form=form)
+
 
 
 @auth.route("/logout")
