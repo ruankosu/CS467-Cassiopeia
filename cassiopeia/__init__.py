@@ -33,7 +33,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    # register the database commands
+    # register the database commands, bcrypt and login_manager
     from cassiopeia import db
     db.init_app(app)
     login_manager.init_app(app)
