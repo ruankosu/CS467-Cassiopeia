@@ -1,25 +1,30 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask import Flask
+from cassiopeia import login_manager
+from flask_login import UserMixin
 
 # Create database object
 db = SQLAlchemy()
 
+# Decorater that gets user from user id
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 # User
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
-    first_name = db.Column(db.String(30), nullable=False)
-    last_name = db.Column(db.String(30), nullable=False)
     # We should create a function for password hashing
     password = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    native_language = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=False)
+    native_language = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=True)
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
 
     def __repr__(self):
-        return '<username=%r, first_name=%r, last_name=%r, email=%r>' % (self.username, self.first_name, self.last_name, self.email)
+        return '<username=%r, first_name=%r, last_name=%r, email=%r>' % (self.username, self.email)
 
 
 # Country
