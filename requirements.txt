@@ -10,3 +10,5 @@ mysql-connector-python
 eventregistry
 flask-login
 bcrypt
+flask_bcrypt
+flask_wtf

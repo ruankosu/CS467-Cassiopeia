@@ -18,7 +18,7 @@ def close_db(e=None):
     """If this request connected to the database, close the
     connection.
     """
-    db = g.pop('db', None)
+    g.pop('db', None)
 
 def init_db():
     """Clear existing data and create new tables."""

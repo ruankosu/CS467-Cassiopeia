@@ -1,10 +1,12 @@
 import os
 from flask import (
-            Blueprint, flash, g, redirect, render_template, request, url_for
+            Blueprint, flash, g, redirect, render_template, request, url_for, current_app
 )
+from flask_login import login_user, current_user, logout_user, login_required
+
 from cassiopeia.views.auth import login_required
-from cassiopeia.models.models import Content
 from cassiopeia import db
+from cassiopeia.models.models import Content
 
 template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 template_dir = os.path.join(template_dir, "cassiopeia")
@@ -13,9 +15,19 @@ template_dir = os.path.join(template_dir, "templates")
 app = Blueprint('content', __name__, template_folder=template_dir)
 
 # Clear or modify all routes below
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
+    if current_user.is_authenticated:
+        return render_template("content/main.html")
     return render_template("home/home.html")
+
+@app.route('/about', methods=['GET'])
+def about():
+    return render_template("home/about.html")
+
+@app.route('/tandc', methods=['GET'])
+def tandc():
+    return render_template("home/t&c.html")
 
 @app.route('/login', methods=('GET', 'POST'))
 @login_required

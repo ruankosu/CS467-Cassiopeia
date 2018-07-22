@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from flask import Flask
+from flask import Flask, current_app
 from cassiopeia import login_manager
 from flask_login import UserMixin
 
@@ -10,7 +10,9 @@ db = SQLAlchemy()
 # Decorater that gets user from user id
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    with current_app.app_context():
+        db.init_app(current_app)
+        return User.query.get(int(user_id))
 
 # User
 class User(db.Model, UserMixin):
@@ -20,6 +22,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     native_language = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=True)
+    languages = db.relationship('UserLangSkill', backref='user')
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
 
@@ -44,9 +47,10 @@ class Country(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(60), unique=True, nullable=False)
-
+    icon_img = db.Column(db.String(60), nullable=True)
+    users = db.relationship('User', secondary='user_category', backref='categories', lazy='dynamic')
     def __repr(self):
-        return '<name=%r>' % self.name
+        return '<name=%r, icon_img=%r>' % (self.name, self.icon_img)
 
 
 # Language
@@ -58,7 +62,7 @@ class Language(db.Model):
     countries = db.relationship('Country', secondary='locale', backref='languages', lazy='dynamic')
     # This relationship backref may not be used in practice, allows
     # us to get all users whose native language matches the lang in question
-    users = db.relationship('User', backref='language', lazy=True)
+    users = db.relationship('UserLangSkill', backref='language', lazy=True)
     # Allows us to get all content items in the given language
     content = db.relationship('Content', backref='language', lazy=True)
 
@@ -72,13 +76,25 @@ locale = db.Table('locale',
     db.Column('country_code', db.String(3), db.ForeignKey('country.alpha3code'), nullable=False)
 )
 
-# User_Lang_Skill table (many-to-many for user and foreign language)
-user_lang_skill = db.Table('user_lang_skill',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
-    db.Column('language_id', db.Integer, db.ForeignKey('language.id'), nullable=False),
-    db.Column('skill', db.Float, nullable=False)
-)
+class UserLangSkill(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, nullable=False)
+    language_id = db.Column(db.Integer, db.ForeignKey('language.id'), primary_key=True, nullable=False)
+    skill = db.Column(db.Float, default=0, nullable=False)
+    # language = db.relationship('Language', backref='users')
+    # user = db.relationship('User', backref='languages')
 
+# # User_Lang_Skill table (many-to-many for user and foreign language)
+# user_lang_skill = db.Table('user_lang_skill',
+#     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
+#     db.Column('language_id', db.Integer, db.ForeignKey('language.id'), nullable=False),
+#     db.Column('skill', db.Float, default=0, nullable=False)
+# )
+
+# User_categories table (many-to-many for user and interest categories)
+user_category = db.Table('user_category',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), nullable=False),
+)
 
 # Content
 class Content(db.Model):

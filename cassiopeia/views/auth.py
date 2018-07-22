@@ -33,27 +33,26 @@ def register():
         login_user(user)
         flash(f'Account has been created! You are now logged in. Please set your preferences now.', 'success')
         # Redirect to preferences dialogue
-        return redirect(url_for('signup.language'))
+        return redirect(url_for('signup.language', user_id=user.id))
     return render_template('signup/signup.html', title='Sign Up', form=form)
 
 
 
 @auth.route("/login", methods=['GET', 'POST'])
 def login():
+    db.get_db()
     if current_user.is_authenticated:
         # URL may need to be altered to correct location
-        return redirect('/')
+        return redirect(url_for('content.main', user_id=current_user.id))
     form = LoginForm(request.form)
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user and global_bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect('/')
+            return redirect(url_for('content.main', user_id=user.id))
         else:
             flash('Login unsuccessful. Please check email and password', 'danger')
     return render_template('auth/login.html', title='Log In', form=form)
-
-
 
 @auth.route("/logout")
 def logout():
