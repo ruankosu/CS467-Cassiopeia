@@ -31,7 +31,7 @@ def register():
         mysql.session.commit()
         # Log in the user
         login_user(user)
-        flash(f'Account has been created! You are now logged in. Please set your preferences now.', 'success')
+        flash('Account has been created! You are now logged in. Please set your preferences now.', 'success')
         # Redirect to preferences dialogue
         return redirect(url_for('signup.language', user_id=user.id))
     return render_template('signup/signup.html', title='Sign Up', form=form)
@@ -49,7 +49,7 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and global_bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
-            return redirect(url_for('content.main', user_id=user.id))
+            return redirect(url_for('content.index'))
         else:
             flash('Login unsuccessful. Please check email and password', 'danger')
     return render_template('auth/login.html', title='Log In', form=form)
