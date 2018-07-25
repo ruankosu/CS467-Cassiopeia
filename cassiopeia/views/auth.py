@@ -43,7 +43,7 @@ def login():
     db.get_db()
     if current_user.is_authenticated:
         # URL may need to be altered to correct location
-        return redirect(url_for('content.main', user_id=current_user.id))
+        return redirect(url_for('content.index'))
     form = LoginForm(request.form)
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
