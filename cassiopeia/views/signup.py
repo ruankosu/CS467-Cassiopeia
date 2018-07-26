@@ -18,7 +18,6 @@ app = Blueprint('signup', __name__, template_folder=template_dir)
 def register():
     return render_template('signup/signup.html')
 
-@app.route('/register/language', methods=['GET', 'POST'])
 @app.route('/register/<user_id>/language', methods=['GET', 'POST'])
 def language(user_id):
 	mysql = db.get_db()
@@ -33,7 +32,6 @@ def language(user_id):
 	languages = [{'name': c.languages[0].name, 'flag': c.flag_image} for c in default_countries]
 	return render_template('signup/language.html', langs=languages)
 
-@app.route('/register/skill', methods=['GET', 'POST'])
 @app.route('/register/<user_id>/skill/<lang_id>', methods=['GET', 'POST'])
 def skill(user_id, lang_id):
 	mysql = db.get_db()
