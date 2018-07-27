@@ -6,7 +6,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 
 from cassiopeia.views.auth import login_required
 from cassiopeia import db
-from cassiopeia.models.models import Content
+from cassiopeia.models.models import Content, User, Language
 
 template_dir = os.path.dirname(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 template_dir = os.path.join(template_dir, "cassiopeia")
@@ -18,7 +18,20 @@ app = Blueprint('content', __name__, template_folder=template_dir)
 @app.route('/', methods=['GET'])
 def index():
     if current_user.is_authenticated:
-        return render_template("content/main.html")
+        payload = {}
+        user = User.query.filter(User.username == current_user.username).first()
+        payload["username"] = user.username
+        payload["categories"] = []
+        payload["languages"] = []
+        payload["history"] = []
+        for c in user.categories:
+            payload["categories"].append(c.name)
+        
+        for l in user.languages:
+            language = Language.query.filter(Language.id == l.language_id).first()
+            payload["languages"].append(language.name)
+        
+        return render_template("content/main.html", payload=payload)
     return render_template("home/home.html")
 
 @app.route('/about', methods=['GET'])

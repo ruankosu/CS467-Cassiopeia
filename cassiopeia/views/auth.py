@@ -13,7 +13,6 @@ from cassiopeia.views.signup_forms import (RegistrationForm, LoginForm)
 
 auth = Blueprint('auth', __name__)
 
-
 # Routes
 @auth.route("/register", methods=['GET', 'POST'])
 def register():

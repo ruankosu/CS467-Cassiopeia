@@ -1,0 +1,41 @@
+    <!-- Sidebar  -->
+    <nav id="sidebar">
+        <!-- <div class="sidebar-header">
+            <h3>{{ payload.username }}</h3>
+        </div> -->
+
+        <ul class="list-unstyled components">
+            <p>{{ payload.username }}</p>
+            <li class="active">
+                <a href="#categorySubmenu" data-toggle="collapse" aria-expanded="false" aria-controls="categorySubmenu" class="dropdown-toggle">Categories</a>
+                <ul class="collapse list-unstyled" id="categorySubmenu">
+                    {% for category in payload.categories %}
+                        <li><a href="#">{{ category }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li>
+                <a href="#languageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Languages</a>
+                <ul class="collapse list-unstyled" id="languageSubmenu">
+                    {% for language in payload.languages %}
+                        <li><a href="#">{{ language }}</a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            <li>
+                <a href="#">History</a>
+            </li>
+            <li>
+                <a href="#">Settings</a>
+            </li>
+        </ul>
+
+        <!-- <ul class="list-unstyled CTAs">
+            <li>
+                <a href="https://bootstrapious.com/tutorial/files/sidebar.zip" class="download">Download source</a>
+            </li>
+            <li>
+                <a href="https://bootstrapious.com/p/bootstrap-sidebar" class="article">Back to article</a>
+            </li>
+        </ul> -->
+    </nav>
