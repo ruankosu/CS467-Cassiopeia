@@ -49,6 +49,8 @@ class Category(db.Model):
     name = db.Column(db.String(60), unique=True, nullable=False)
     icon_img = db.Column(db.String(60), nullable=True)
     users = db.relationship('User', secondary='user_category', backref='categories', lazy='dynamic')
+    articles = db.relationship('Content', secondary='content_category', backref='categories', lazy='dynamic')
+
     def __repr(self):
         return '<name=%r, icon_img=%r>' % (self.name, self.icon_img)
 

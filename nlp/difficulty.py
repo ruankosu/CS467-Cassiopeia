@@ -11,21 +11,21 @@ def count_chars(text):
 	# count number of letters and numbers
 	letters = string.ascii_letters
 	digits = string.digits
-	letter_count = len(filter(functools.partial(operator.contains, letters), text))
-	digit_count = len(filter(functools.partial(operator.contains, digits), text))
+	letter_count = len(list(filter(functools.partial(operator.contains, letters), text)))
+	digit_count = len(list(filter(functools.partial(operator.contains, digits), text)))
 	char_count = letter_count + digit_count
 	return char_count
 
 def count_words(text):
 	# count spaces
 	spaces = string.whitespace
-	space_count = len(filter(functools.partial(operator.contains, spaces), text))
+	space_count = len(list(filter(functools.partial(operator.contains, spaces), text)))
 	return space_count
 
 def count_sentences(text):
 	# count sentence
 	sentenceEnd = '.!?'
-	sentence_count = len(filter(functools.partial(operator.contains, sentenceEnd), text))
+	sentence_count = len(list(filter(functools.partial(operator.contains, sentenceEnd), text)))
 	return sentence_count
 
 

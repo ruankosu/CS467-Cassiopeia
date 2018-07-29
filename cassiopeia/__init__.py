@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
+from flask_cors import CORS
 
 # register bcrypt object
 global_bcrypt = Bcrypt()
@@ -19,6 +20,9 @@ def create_app(test_config=None):
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://kruan@35.230.15.28/cassiopeia_prod?charset=utf8mb4'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Enable CORS on api routes
+    CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -44,6 +48,9 @@ def create_app(test_config=None):
     app.register_blueprint(auth.auth)
     app.register_blueprint(content.app)
     app.register_blueprint(signup.app)
+
+    from cassiopeia import api
+    app.register_blueprint(api.api)
 
     return app
 
