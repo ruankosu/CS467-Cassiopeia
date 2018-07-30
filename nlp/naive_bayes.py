@@ -1,7 +1,18 @@
+'''
+    Title: naive_bayes.py
+    Description: Rudimentary implentation of the NLTK's Naive
+        Bayes classifier for text classification.
+    Author: Kendra Ellis, copyright 2018
+    For: CS467 Cassiopeia - NLP1 Group Project
+    Notes: This code is highly informed/influenced by the set of
+        tutorials found here:
+        https://pythonprogramming.net/text-classification-nltk-tutorial/
+'''
+
+
 # Import statements
 import nltk
-import random
-import sys, os
+import sys, os, pickle
 proj_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0, proj_dir)
 
@@ -120,7 +131,7 @@ if __name__== "__main__":
     #print(all_words)
     # Convert all_words to dictionary with word frequency denoted
     all_words = nltk.FreqDist(all_words)
-    # Create a list of 3000 most frequent words
+    # Create a list of 5000 most frequent words
     feature_words = list(all_words.keys())[:5000]
     # Call find_words on a document
     # Create featuresets
@@ -135,5 +146,16 @@ if __name__== "__main__":
     # Train Naive-Bayes Algorithm
     classifier = nltk.NaiveBayesClassifier.train(training_set)
 
+    # Show accuracy and 15 most informative features
     print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
     classifier.show_most_informative_features(15)
+
+    # Pickle classifier for later use
+    save_classifier = open("naivebayes.pickle", "wb")
+    pickle.dumb(classifier, save_classfier)
+    save_classifier.close
+
+    # How to use pickled classifier
+    ''' classifer_f = open("naivebayes.pickle", "rb")
+        classifer = pickle.load(classfier_f)
+        classifier_f.close() '''
