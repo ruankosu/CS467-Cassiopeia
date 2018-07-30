@@ -106,7 +106,6 @@ def create_featuresets(feature_words, user_ratings):
     return [(find_words(article, feature_words), category) for (article, category) in user_ratings]
 
 
-
 # Define training set
 # Train
 # (run tests)
@@ -115,7 +114,7 @@ def create_featuresets(feature_words, user_ratings):
 
 if __name__== "__main__":
     # Load data
-    user_ratings = get_ratings(38)
+    user_ratings = get_ratings(39)
     #print(user_ratings)
     all_words = get_words(user_ratings)
     #print(all_words)
@@ -124,11 +123,17 @@ if __name__== "__main__":
     # Create a list of 3000 most frequent words
     feature_words = list(all_words.keys())[:5000]
     # Call find_words on a document
-    '''word_match = find_words(90, feature_words)
-    for word in word_match:
-        if word_match[word] == True:
-            print(word)'''
+    # Create featuresets
     featuresets = create_featuresets(feature_words, user_ratings)
-    print(featuresets[0])
+    #print(featuresets[0])
 
+    # Define training and testing sets by
+    # splitting set of all reviews in half
+    training_set = featuresets[:250]
+    testing_set = featuresets[250:]
 
+    # Train Naive-Bayes Algorithm
+    classifier = nltk.NaiveBayesClassifier.train(training_set)
+
+    print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
+    classifier.show_most_informative_features(15)
