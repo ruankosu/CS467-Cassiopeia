@@ -65,8 +65,8 @@ def get_words(entries):
 
 
 # find_words()
-# Checks given .txt for all dict words
-# Assigns true/false - denoting is_in_.txt
+''' Checks given content for all dict words
+    Assigns true/false - denoting word is in content '''
 def find_words(content_id, feature_words):
     with app.app_context():
         db.init_app(app)
@@ -83,7 +83,7 @@ def find_words(content_id, feature_words):
 # Define training set
 # Train
 # (run tests)
-
+# Clean further - exclude miniwords, numbers, and punctuation marks
 # Find article
 # Get user skill
 # Start at user skill (get all content @ given skill level)
@@ -93,18 +93,18 @@ def find_words(content_id, feature_words):
 
 if __name__== "__main__":
     # Load data
-    user_ratings = get_ratings(33)
+    user_ratings = get_ratings(36)
     #print(user_ratings)
     all_words = get_words(user_ratings)
     #print(all_words)
     # Convert all_words to dictionary with word frequency denoted
     all_words = nltk.FreqDist(all_words)
     # Create a list of 3000 most frequent words
-    feature_words = list(all_words.keys())[:3000]
+    feature_words = list(all_words.keys())[:5000]
     # Call find_words on a document
-    '''word_match = find_words(90, feature_words)
+    word_match = find_words(90, feature_words)
     for word in word_match:
         if word_match[word] == True:
-            print(word)'''
+            print(word)
 
 
