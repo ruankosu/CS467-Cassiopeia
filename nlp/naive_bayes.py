@@ -9,19 +9,18 @@ from cassiopeia.models.models import db, User, Progress, Content
 from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
 
-# Custom App to load to cassiopeia_prod database, neeed utf8mb4 for emoji support
+# Custom App to load to cassiopeia_prod database, need utf8mb4 for emoji support
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://kruan@35.230.15.28/cassiopeia_prod?charset=utf8mb4'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-with app.app_context():
-    db.init_app(app)
-    db.create_all()
 
 # get_ratings()
-# For each piece of content that the user has ever rated
-# Tokenize the words and get the rating
-# Store as a tuple in larger dictionary
+''' Gets all Progress entries for the given user (by id)
+    and tokenizes the words for each entry's content. Stores
+    tokenized word list and user-assigned rating in container
+    called tokenized_entries as a tuple for each piece of
+    user-rated content '''
 def get_ratings(user_id):
     with app.app_context():
         db.init_app(app)
@@ -35,19 +34,24 @@ def get_ratings(user_id):
         for entry in user_entries:
             tokenized_words_b = Content.query.filter_by(id=entry.content_id).first().body.split()
             tokenized_words = []
-            ''' Decode from binary to utf-8 '''
+            ''' Decode from binary to utf8 '''
             for word in tokenized_words_b:
                 tokenized_words.append(word.decode('utf8'))
             tokenized_entries.append([tokenized_words, entry.rating])
         return tokenized_entries
 
-# clean_dict_words()
-# Normalize all dict words to lower case
+
+
+# get_words()
+''' Grabs all words from all user-rated entries and
+    normalizes each word to lowercase. Appends each word
+    to a list called all_words '''
 def get_words(entries):
     with app.app_context():
         db.init_app(app)
         db.create_all()
 
+        # Container for all words
         all_words = []
 
         ''' For each entry in the list of entry tuples
@@ -63,7 +67,18 @@ def get_words(entries):
 # find_words()
 # Checks given .txt for all dict words
 # Assigns true/false - denoting is_in_.txt
-# def get_words():
+def find_words(content_id, feature_words):
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
+
+        # Create a set of words from the given content
+        words = set(Content.query.filter_by(id=content_id).first().body.decode('utf8'))
+        features = {}
+        for word in feature_words:
+            features[word] = (word in words)
+        return features
+
 
 # Define training set
 # Train
@@ -81,5 +96,15 @@ if __name__== "__main__":
     user_ratings = get_ratings(33)
     #print(user_ratings)
     all_words = get_words(user_ratings)
-    print(all_words)
+    #print(all_words)
+    # Convert all_words to dictionary with word frequency denoted
+    all_words = nltk.FreqDist(all_words)
+    # Create a list of 3000 most frequent words
+    feature_words = list(all_words.keys())[:3000]
+    # Call find_words on a document
+    '''word_match = find_words(90, feature_words)
+    for word in word_match:
+        if word_match[word] == True:
+            print(word)'''
+
 
