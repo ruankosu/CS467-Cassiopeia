@@ -49,11 +49,17 @@ def get_words(entries):
         db.create_all()
 
         all_words = []
-        return
 
         ''' For each entry in the list of entry tuples
                 For each word in tuple[0]
                     Append that word to all_words list '''
+        for entry in entries:
+            for word in entry[0]:
+                all_words.append(word.lower())
+
+        return all_words
+
+
 # find_words()
 # Checks given .txt for all dict words
 # Assigns true/false - denoting is_in_.txt
@@ -73,6 +79,7 @@ def get_words(entries):
 if __name__== "__main__":
     # Load data
     user_ratings = get_ratings(33)
-    print(user_ratings)
-    #all_words =
+    #print(user_ratings)
+    all_words = get_words(user_ratings)
+    print(all_words)
 
