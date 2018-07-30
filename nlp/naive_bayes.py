@@ -33,14 +33,27 @@ def get_ratings(user_id):
             create a tuple entry [[word_list], rating] '''
         tokenized_entries = []
         for entry in user_entries:
-            tokenized_words = Content.query.filter_by(id=entry.content_id).first().body.split()
+            tokenized_words_b = Content.query.filter_by(id=entry.content_id).first().body.split()
+            tokenized_words = []
+            ''' Decode from binary to utf-8 '''
+            for word in tokenized_words_b:
+                tokenized_words.append(word.decode('utf8'))
             tokenized_entries.append([tokenized_words, entry.rating])
         return tokenized_entries
 
 # clean_dict_words()
 # Normalize all dict words to lower case
-#def create_dict():
+def get_words(entries):
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
 
+        all_words = []
+        return
+
+        ''' For each entry in the list of entry tuples
+                For each word in tuple[0]
+                    Append that word to all_words list '''
 # find_words()
 # Checks given .txt for all dict words
 # Assigns true/false - denoting is_in_.txt
@@ -61,3 +74,5 @@ if __name__== "__main__":
     # Load data
     user_ratings = get_ratings(33)
     print(user_ratings)
+    #all_words =
+
