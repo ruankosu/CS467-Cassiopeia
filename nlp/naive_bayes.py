@@ -64,10 +64,26 @@ def get_words(entries):
         return all_words
 
 
+
 # find_words()
 ''' Checks given content for all dict words
-    Assigns true/false - denoting word is in content '''
-def find_words(content_id, feature_words):
+    Assigns true/false - denoting word is in content for
+    a given word list '''
+def find_words(word_list, feature_words):
+    # Create a set of words from the given content
+    words = set(word_list)
+    features = {}
+    for word in feature_words:
+        features[word] = (word in words)
+    return features
+
+
+
+# find_words_doc()
+''' Checks given content for all dict words
+    Assigns true/false - denoting word is in content for
+    a given piece of content (by id) '''
+def find_words_doc(content_id, feature_words):
     with app.app_context():
         db.init_app(app)
         db.create_all()
@@ -80,20 +96,26 @@ def find_words(content_id, feature_words):
         return features
 
 
+
+# create_featuresets()
+''' Creates and returns a list of tuples where the first entry
+    is a find_words() list for a given article, and the second
+    is the article's category for ALL articles in list
+    returned by get_ratings() '''
+def create_featuresets(feature_words, user_ratings):
+    return [(find_words(article, feature_words), category) for (article, category) in user_ratings]
+
+
+
 # Define training set
 # Train
 # (run tests)
 # Clean further - exclude miniwords, numbers, and punctuation marks
-# Find article
-# Get user skill
-# Start at user skill (get all content @ given skill level)
-# Run content through posterior algo
-# If classified as just right, push to user
-# Else skip
+
 
 if __name__== "__main__":
     # Load data
-    user_ratings = get_ratings(36)
+    user_ratings = get_ratings(38)
     #print(user_ratings)
     all_words = get_words(user_ratings)
     #print(all_words)
@@ -102,9 +124,11 @@ if __name__== "__main__":
     # Create a list of 3000 most frequent words
     feature_words = list(all_words.keys())[:5000]
     # Call find_words on a document
-    word_match = find_words(90, feature_words)
+    '''word_match = find_words(90, feature_words)
     for word in word_match:
         if word_match[word] == True:
-            print(word)
+            print(word)'''
+    featuresets = create_featuresets(feature_words, user_ratings)
+    print(featuresets[0])
 
 
