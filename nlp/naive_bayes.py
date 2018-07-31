@@ -7,6 +7,9 @@
     Notes: This code is highly informed/influenced by the set of
         tutorials found here:
         https://pythonprogramming.net/text-classification-nltk-tutorial/
+
+        Additionally, instructions found here were particularly helpful:
+            https://www.nltk.org/book/ch06.html
 '''
 
 
@@ -150,10 +153,12 @@ if __name__== "__main__":
     print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
     classifier.show_most_informative_features(15)
 
+    # Test classifier on one text
+
     # Pickle classifier for later use
-    save_classifier = open("naivebayes.pickle", "wb")
+    '''save_classifier = open("naivebayes.pickle", "wb")
     pickle.dumb(classifier, save_classfier)
-    save_classifier.close
+    save_classifier.close'''
 
     # How to use pickled classifier
     ''' classifer_f = open("naivebayes.pickle", "rb")
