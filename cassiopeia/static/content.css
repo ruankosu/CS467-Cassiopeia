@@ -60,10 +60,14 @@ a:focus {
 #sidebar {
     min-width: 250px;
     max-width: 250px;
+    height: 100%;
+    position: fixed;
+    z-index: 1;
     background: #7386D5;
     color: #fff;
     transition: all 0.3s;
     margin-top: 20px;
+    overflow-x: hidden;
 }
 
 #sidebar.active {
@@ -146,13 +150,13 @@ a.article:hover {
 /* ---------------------------------------------------
     CONTENT STYLE
 ----------------------------------------------------- */
-
-#content {
+#app-content {
     width: 100%;
     padding: 20px;
     min-height: 100vh;
     transition: all 0.3s;
     margin-top: 20px;
+    margin-left: 250px; /* Same as the width of the sidenav */
 }
 
 /* ---------------------------------------------------
