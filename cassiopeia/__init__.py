@@ -23,6 +23,7 @@ def create_app(test_config=None):
     
     # Enable CORS on api routes
     CORS(app, resources={r"/api/*": {"origins": "*"}})
+    app.config['CORS_SUPPORTS_CREDENTIALS'] = True
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
