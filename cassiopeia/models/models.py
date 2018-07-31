@@ -22,10 +22,11 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     native_language = db.Column(db.Integer, db.ForeignKey('language.id'), nullable=True)
+    feature_set = db.Column(db.PickleType, nullable=True)
+    classifier = db.Column(db.PickleType, nullable=True)
     languages = db.relationship('UserLangSkill', backref='user')
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
-
     def __repr__(self):
         return '<username=%r, first_name=%r, last_name=%r, email=%r>' % (self.username, self.email)
 

@@ -120,47 +120,57 @@ def create_featuresets(feature_words, user_ratings):
     return [(find_words(article, feature_words), category) for (article, category) in user_ratings]
 
 
-# Define training set
-# Train
-# (run tests)
-# Clean further - exclude miniwords, numbers, and punctuation marks
 
-
-if __name__== "__main__":
+def create_classifier(user_id, feature_ct, word_ct):
     # Load data
-    user_ratings = get_ratings(39)
+    user_ratings = get_ratings(user_id)
+
     #print(user_ratings)
     all_words = get_words(user_ratings)
-    #print(all_words)
+
     # Convert all_words to dictionary with word frequency denoted
     all_words = nltk.FreqDist(all_words)
-    # Create a list of 5000 most frequent words
-    feature_words = list(all_words.keys())[:5000]
-    # Call find_words on a document
+
+    # Create a list of n most frequent words where n = word_ct
+    feature_words = list(all_words.keys())[:word_ct]
+
     # Create featuresets
     featuresets = create_featuresets(feature_words, user_ratings)
-    #print(featuresets[0])
 
     # Define training and testing sets by
-    # splitting set of all reviews in half
-    training_set = featuresets[:250]
-    testing_set = featuresets[250:]
+    # splitting set of all reviews (count = feature_ct) in half
+    training_set = featuresets[:feature_ct]
+    testing_set = featuresets[feature_ct:]
 
     # Train Naive-Bayes Algorithm
     classifier = nltk.NaiveBayesClassifier.train(training_set)
 
     # Show accuracy and 15 most informative features
-    print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
-    classifier.show_most_informative_features(15)
+    #print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
+    # classifier.show_most_informative_features(15)
 
-    # Test classifier on one text
+    # Pickle the dictionary for later use
+    saved_dictionary = open("dictionary.pick", "wb")
+    pickle.dump(feature_words)
+    saved_dictionary.close
 
     # Pickle classifier for later use
-    '''save_classifier = open("naivebayes.pickle", "wb")
-    pickle.dumb(classifier, save_classfier)
-    save_classifier.close'''
+    saved_classifier = open("naivebayes.pickle", "wb")
+    pickle.dump(classifier, saved_classfier)
+    saved_classifier.close
 
-    # How to use pickled classifier
-    ''' classifer_f = open("naivebayes.pickle", "rb")
+    # Save dictionary and classifier in user's row in DB
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
+
+        # Get user
+        user = User.query.filter_by(user_id = user_id).first()
+
+
+
+
+    ''' How to use pickled classifier
+        classifer_f = open("naivebayes.pickle", "rb")
         classifer = pickle.load(classfier_f)
         classifier_f.close() '''
