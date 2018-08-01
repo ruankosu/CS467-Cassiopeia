@@ -1,10 +1,10 @@
 # Article API 
+from datetime import datetime
 from cassiopeia.models.models import User, Content, Language
 from cassiopeia import db
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app, json
 )
-from flask_cors import CORS
 
 # Helps handle user sessions
 from flask_login import login_user, current_user, logout_user, login_required
@@ -29,9 +29,9 @@ def contents_to_obj(contents):
   for c in contents:
     obj = {}
     obj["id"] = c.id
-    obj["name"] = str(c.name)
+    obj["name"] = str(c.name.decode("utf-8"))
     obj["language"] = str(c.language.name)
-    obj["pub_date"] = str(c.pub_date)
+    obj["pub_date"] = datetime.strftime(c.pub_date, '%b %d, %Y')
     obj["url"] = str(c.url)
     obj["categories"] = [str(category.name) for category in c.categories]
     obj["level"] = c.level
@@ -95,7 +95,15 @@ def getArticle():
     return response_wrapper({"error": str(ex)}, 500)
 
   return response_wrapper({"error": "Something went wrong"}, 500)
- 
+
+@api.after_request
+def after_request(response):
+  # response.headers.add('Access-Control-Allow-Origin', 'http://localhost:8080')
+  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+  response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+  response.headers.add('Access-Control-Allow-Credentials', 'true')
+  return response
+
 # ----------------------------- Other APIs ----------------------------------- #
 
 
