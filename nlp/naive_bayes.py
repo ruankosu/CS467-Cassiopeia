@@ -55,7 +55,6 @@ def get_ratings(user_id):
         return tokenized_entries
 
 
-
 # get_words()
 ''' Grabs all words from all user-rated entries and
     normalizes each word to lowercase. Appends each word
@@ -67,16 +66,13 @@ def get_words(entries):
 
         # Container for all words
         all_words = []
-
         ''' For each entry in the list of entry tuples
                 For each word in tuple[0]
                     Append that word to all_words list '''
         for entry in entries:
             for word in entry[0]:
                 all_words.append(word.lower())
-
         return all_words
-
 
 
 # find_words()
@@ -90,7 +86,6 @@ def find_words(word_list, feature_words):
     for word in feature_words:
         features[word] = (word in words)
     return features
-
 
 
 # find_words_doc()
@@ -110,7 +105,6 @@ def find_words_doc(content_id, feature_words):
         return features
 
 
-
 # create_featuresets()
 ''' Creates and returns a list of tuples where the first entry
     is a find_words() list for a given article, and the second
@@ -120,7 +114,15 @@ def create_featuresets(feature_words, user_ratings):
     return [(find_words(article, feature_words), category) for (article, category) in user_ratings]
 
 
-
+# create_classifier()
+''' Creates and stores a pickled classifier (and feature set)
+    for the given user.
+    Parameters:
+        user_id - db id of user for whom the classifier will be created
+        feature_ct - max number of words to consider from the created
+            feature set
+        word_ct - max number of words to use when creating most frequent
+            word list '''
 def create_classifier(user_id, feature_ct, word_ct):
     # Load data
     user_ratings = get_ratings(user_id)
@@ -146,18 +148,14 @@ def create_classifier(user_id, feature_ct, word_ct):
     classifier = nltk.NaiveBayesClassifier.train(training_set)
 
     # Show accuracy and 15 most informative features
-    #print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
+    # print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
     # classifier.show_most_informative_features(15)
 
     # Pickle the dictionary for later use
-    saved_dictionary = open("dictionary.pick", "wb")
-    pickle.dump(feature_words)
-    saved_dictionary.close
+    saved_dictionary = pickle.dumps(feature_words)
 
     # Pickle classifier for later use
-    saved_classifier = open("naivebayes.pickle", "wb")
-    pickle.dump(classifier, saved_classfier)
-    saved_classifier.close
+    saved_classifier = pickle.dumps(classifier)
 
     # Save dictionary and classifier in user's row in DB
     with app.app_context():
@@ -165,12 +163,39 @@ def create_classifier(user_id, feature_ct, word_ct):
         db.create_all()
 
         # Get user
-        user = User.query.filter_by(user_id = user_id).first()
+        user = User.query.filter_by(id=user_id).first()
+        user.feature_set = saved_dictionary
+        user.classifier = saved_classifier
+        # Commit updates
+        db.session.commit()
+
+    return
 
 
+# classify()
+''' Returns the predicted category (-1, 0, 1)
+    and takes the text to classify as a parameter '''
+def classify(text, user_id):
+
+    # Retrieve classifier from db
+    pickled_classifier = User.query.filter_by(id=user_id).first().classifier
+    classifier = pickle.loads(pickled_classfier)
+    # Retrieve dictionary from db
+    pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
+    feature_set = pickle.loads(pickled_feature_set)
+
+    # Featurize the text to classify
+    featurized_text = find_words(text, feature_set)
+
+    # Feed featurized text to classifier
+    # Return predicted category
+    return classifier.classify()
 
 
-    ''' How to use pickled classifier
-        classifer_f = open("naivebayes.pickle", "rb")
-        classifer = pickle.load(classfier_f)
-        classifier_f.close() '''
+if __name__== "__main__":
+    #TEST
+
+    #Create classifier and featureset for user #39, test_nb_user
+    create_classifier(39, 500, 5000)
+    #Classify a text and return the predicted category
+    classify("Hello there I am a bear", 39, classifier)
