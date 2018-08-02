@@ -123,7 +123,7 @@ def create_featuresets(feature_words, user_ratings):
             feature set
         word_ct - max number of words to use when creating most frequent
             word list '''
-def create_classifier(user_id, feature_ct, word_ct):
+def create_classifier(user_id, word_ct):
     # Load data
     user_ratings = get_ratings(user_id)
 
@@ -140,16 +140,16 @@ def create_classifier(user_id, feature_ct, word_ct):
     featuresets = create_featuresets(feature_words, user_ratings)
 
     # Define training and testing sets by
-    # splitting set of all reviews (count = feature_ct) in half
-    training_set = featuresets[:feature_ct]
-    testing_set = featuresets[feature_ct:]
+    # splitting set of all reviews in half
+    # training_set = featuresets[:feature_ct]
+    # testing_set = featuresets[feature_ct:]
 
     # Train Naive-Bayes Algorithm
-    classifier = nltk.NaiveBayesClassifier.train(training_set)
+    classifier = nltk.NaiveBayesClassifier.train(featuresets)
 
     # Show accuracy and 15 most informative features
-    print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
-    classifier.show_most_informative_features(15)
+    # print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
+    # classifier.show_most_informative_features(15)
 
     '''# Pickle the dictionary for later use
     saved_dictionary = pickle.dumps(feature_words)
@@ -174,7 +174,9 @@ def create_classifier(user_id, feature_ct, word_ct):
 
 # classify()
 ''' Returns the predicted category (-1, 0, 1)
-    and takes the text to classify as a parameter '''
+    and takes list of words to use as features, the
+    naive bayes classifier object,
+    the text to classify, and the user's id as arguments '''
 def classify(feature_set, classifier, text, user_id):
 
     '''# Retrieve classifier from db
@@ -196,11 +198,13 @@ if __name__== "__main__":
     #TEST
 
     #Create classifier and featureset for user #39, test_nb_user
-    classifier_tuple = create_classifier(39, 250, 5000)
+    classifier_tuple = create_classifier(39, 5000)
     #Get a text from the database
     with app.app_context():
         db.init_app(app)
         db.create_all()
         test_text = Content.query.filter_by(id=10).first().body
     #Classify a text and return the predicted category
-    print(classify(classifier_tuple[1], classifier_tuple[0], test_text, 39))
+    classifier = classifier_tuple[0]
+    feature_set = classifier_tuple[1]
+    print(classify(feature_set, classifier, test_text, 39))
