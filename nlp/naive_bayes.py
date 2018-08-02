@@ -148,10 +148,10 @@ def create_classifier(user_id, feature_ct, word_ct):
     classifier = nltk.NaiveBayesClassifier.train(training_set)
 
     # Show accuracy and 15 most informative features
-    # print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
-    # classifier.show_most_informative_features(15)
+    print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
+    classifier.show_most_informative_features(15)
 
-    # Pickle the dictionary for later use
+    '''# Pickle the dictionary for later use
     saved_dictionary = pickle.dumps(feature_words)
 
     # Pickle classifier for later use
@@ -167,35 +167,40 @@ def create_classifier(user_id, feature_ct, word_ct):
         user.feature_set = saved_dictionary
         user.classifier = saved_classifier
         # Commit updates
-        db.session.commit()
+        db.session.commit()'''
 
-    return
+    return [classifier, feature_words]
 
 
 # classify()
 ''' Returns the predicted category (-1, 0, 1)
     and takes the text to classify as a parameter '''
-def classify(text, user_id):
+def classify(feature_set, classifier, text, user_id):
 
-    # Retrieve classifier from db
+    '''# Retrieve classifier from db
     pickled_classifier = User.query.filter_by(id=user_id).first().classifier
     classifier = pickle.loads(pickled_classfier)
     # Retrieve dictionary from db
     pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
-    feature_set = pickle.loads(pickled_feature_set)
+    feature_set = pickle.loads(pickled_feature_set)'''
 
     # Featurize the text to classify
     featurized_text = find_words(text, feature_set)
 
     # Feed featurized text to classifier
     # Return predicted category
-    return classifier.classify()
+    return classifier.classify(featurized_text)
 
 
 if __name__== "__main__":
     #TEST
 
     #Create classifier and featureset for user #39, test_nb_user
-    create_classifier(39, 500, 5000)
+    classifier_tuple = create_classifier(39, 250, 5000)
+    #Get a text from the database
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
+        test_text = Content.query.filter_by(id=10).first().body
     #Classify a text and return the predicted category
-    classify("Hello there I am a bear", 39, classifier)
+    print(classify(classifier_tuple[1], classifier_tuple[0], test_text, 39))
