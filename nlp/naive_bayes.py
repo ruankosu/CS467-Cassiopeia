@@ -76,7 +76,7 @@ def get_words(entries):
 
 
 # find_words()
-''' Checks given content for all dict words
+''' Checks body of given content for all dict words
     Assigns true/false - denoting word is in content for
     a given word list '''
 def find_words(word_list, feature_words):
@@ -115,12 +115,10 @@ def create_featuresets(feature_words, user_ratings):
 
 
 # create_classifier()
-''' Creates and stores a pickled classifier (and feature set)
-    for the given user.
+''' Creates and stores a pickled classifier (and feature set, i.e., words to use
+    for classification) for the given user.
     Parameters:
         user_id - db id of user for whom the classifier will be created
-        feature_ct - max number of words to consider from the created
-            feature set
         word_ct - max number of words to use when creating most frequent
             word list '''
 def create_classifier(user_id, word_ct):
@@ -151,7 +149,7 @@ def create_classifier(user_id, word_ct):
     # print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
     # classifier.show_most_informative_features(15)
 
-    '''# Pickle the dictionary for later use
+    # Pickle the dictionary for later use
     saved_dictionary = pickle.dumps(feature_words)
 
     # Pickle classifier for later use
@@ -167,44 +165,45 @@ def create_classifier(user_id, word_ct):
         user.feature_set = saved_dictionary
         user.classifier = saved_classifier
         # Commit updates
-        db.session.commit()'''
+        db.session.commit()
 
-    return [classifier, feature_words]
+    #return [classifier, feature_words]
+    return
 
 
 # classify()
 ''' Returns the predicted category (-1, 0, 1)
-    and takes list of words to use as features, the
-    naive bayes classifier object,
-    the text to classify, and the user's id as arguments '''
-def classify(feature_set, classifier, text, user_id):
+    and takes the text to classify
+    and the user's id as arguments '''
+def classify(text, user_id):
 
-    '''# Retrieve classifier from db
-    pickled_classifier = User.query.filter_by(id=user_id).first().classifier
-    classifier = pickle.loads(pickled_classfier)
-    # Retrieve dictionary from db
-    pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
-    feature_set = pickle.loads(pickled_feature_set)'''
+    # Retrieve classifier from db
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
+        pickled_classifier = User.query.filter_by(id=user_id).first().classifier
+        classifier = pickle.loads(pickled_classifier)
+        # Retrieve dictionary from db
+        pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
+        feature_set = pickle.loads(pickled_feature_set)
 
-    # Featurize the text to classify
-    featurized_text = find_words(text, feature_set)
+        # Featurize the text to classify
+        featurized_text = find_words(text, feature_set)
 
-    # Feed featurized text to classifier
-    # Return predicted category
-    return classifier.classify(featurized_text)
+        # Feed featurized text to classifier
+        # Return predicted category
+        return classifier.classify(featurized_text)
 
 
-if __name__== "__main__":
+'''if __name__== "__main__":
     #TEST
 
     #Create classifier and featureset for user #39, test_nb_user
-    classifier_tuple = create_classifier(39, 5000)
+    create_classifier(39, 5000)
     #Get a text from the database
     with app.app_context():
         db.init_app(app)
         db.create_all()
-        test_text = Content.query.filter_by(id=10).first().body
+        test_text = Content.query.filter_by(id=1).first().body
     #Classify a text and return the predicted category
-    classifier = classifier_tuple[0]
-    feature_set = classifier_tuple[1]
-    print(classify(feature_set, classifier, test_text, 39))
+    print(classify(test_text, 39))'''
