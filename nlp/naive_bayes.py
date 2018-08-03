@@ -43,9 +43,12 @@ def get_ratings(user_id):
         user_entries = Progress.query.filter_by(user_id=user_id).all()
 
         ''' Tokenize each piece of content's words and
-            create a tuple entry [[word_list], rating] '''
+            create a tuple entry [[word_list], rating]
+            ***NOTE: need to add punctuation stripping, accepting
+                alpha chars only, etc. to refine features '''
         tokenized_entries = []
         for entry in user_entries:
+            ''' Get binary first '''
             tokenized_words_b = Content.query.filter_by(id=entry.content_id).first().body.split()
             tokenized_words = []
             ''' Decode from binary to utf8 '''
