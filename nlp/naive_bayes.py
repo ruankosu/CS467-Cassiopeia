@@ -201,7 +201,7 @@ if __name__== "__main__":
 
         results_list = []
 
-        for i in range (1, 10):
+        for i in range (1, 51):
             test_text = Content.query.filter_by(id=i).first().body
             results_list.append(classify(test_text, 39))
 
