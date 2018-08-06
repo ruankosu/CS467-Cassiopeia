@@ -65,7 +65,7 @@ Vue.component('content-sidebar', {
                 <a href="#languageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Languages</a>
                 <ul class="collapse list-unstyled" id="languageSubmenu">
                   <li v-for="language in settings.user_languages" :key="language.iso" v-on:click="languageSelected(language.iso)">
-                    <a href="#">{{ language.language_name }}</a>
+                    <a href="#">{{ language.language_name }} - {{ language.skill }}</a>
                   </li>
                 </ul>
             </li>
