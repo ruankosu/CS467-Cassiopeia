@@ -21,9 +21,9 @@
 {% endblock script %}
 
 {% block content %}
-<div class="wrapper">
+<div id="app" class="wrapper">
     <!-- Sidebar  -->
-    {% include "content/sidebar.html" %}
+    <content-sidebar v-bind:settings="userData"></content-sidebar>
 
     <!-- Page Content  -->
     {% include "content/content.html" %}
