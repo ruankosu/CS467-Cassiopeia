@@ -53,7 +53,9 @@ def get_ratings(user_id):
             tokenized_words = []
             ''' Decode from binary to utf8 '''
             for word in tokenized_words_b:
-                tokenized_words.append(word.decode('utf8'))
+                word = word.decode('utf8')
+                word = word.strip('.,!?-*();:\'\"[]{}\\')
+                tokenized_words.append(word)
             tokenized_entries.append([tokenized_words, entry.rating])
         return tokenized_entries
 
@@ -63,49 +65,37 @@ def get_ratings(user_id):
     normalizes each word to lowercase. Appends each word
     to a list called all_words '''
 def get_words(entries):
-    with app.app_context():
-        db.init_app(app)
-        db.create_all()
-
-        # Container for all words
-        all_words = []
-        ''' For each entry in the list of entry tuples
-                For each word in tuple[0]
-                    Append that word to all_words list '''
-        for entry in entries:
-            for word in entry[0]:
-                all_words.append(word.lower())
-        return all_words
+    # Container for all words
+    all_words = []
+    ''' For each entry in the list of entry tuples
+            For each word in tuple[0]
+                Append that word to all_words list '''
+    for entry in entries:
+        for word in entry[0]:
+            all_words.append(word.lower())
+    return all_words
 
 
 # find_words()
-''' Checks body of given content for all dict words
-    Assigns true/false - denoting word is in content for
-    a given word list '''
+''' Checks body of given content for all feature words
+    Assigns true/false - denoting feature word is in content '''
 def find_words(word_list, feature_words):
+
+    # Translate from binary to utf-8 and strip punctuation
+    word_list_b = word_list.split()
+    word_list = []
+    for word in word_list_b:
+        word = word.decode('utf8')
+        word = word.strip('.,!?-*();:\'\"[]{}\\')
+        word_list.append(word)
+
     # Create a set of words from the given content
     words = set(word_list)
+
     features = {}
     for word in feature_words:
         features[word] = (word in words)
     return features
-
-
-# find_words_doc()
-''' Checks given content for all dict words
-    Assigns true/false - denoting word is in content for
-    a given piece of content (by id) '''
-def find_words_doc(content_id, feature_words):
-    with app.app_context():
-        db.init_app(app)
-        db.create_all()
-
-        # Create a set of words from the given content
-        words = set(Content.query.filter_by(id=content_id).first().body.decode('utf8'))
-        features = {}
-        for word in feature_words:
-            features[word] = (word in words)
-        return features
 
 
 # create_featuresets()
@@ -211,7 +201,7 @@ if __name__== "__main__":
 
         results_list = []
 
-        for i in range (1, 50):
+        for i in range (1, 10):
             test_text = Content.query.filter_by(id=i).first().body
             results_list.append(classify(test_text, 39))
 
