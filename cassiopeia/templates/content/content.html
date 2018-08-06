@@ -1,4 +1,6 @@
 <div id="app-content" v-on:next="nextPage">
+    <div v-if="snackbarData.showSnackbar" class="show" id="snackbar">Thank you for rating!</div>
+
     <nav id="contentSideBar" class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
 
@@ -14,6 +16,10 @@
     </nav>
 
     <h1>Articles</h1>
+    <button type="button" id="trainer" class="btn btn-info">
+        <i class="fas fa-align-left"></i>
+        <span>Train Model</span>
+    </button>
 
     <section v-if="errored">
         <p>We're sorry, we're not able to retrieve this information at the moment, please try back later</p>
@@ -21,10 +27,12 @@
     
     <section v-else>
         <div v-if="loading">Loading...</div>
-   
+        <div v-else-if="showHistory">
+            <p v-for="content in history" :key="content.id">{{ '{{ content.name }}' }} read on: {{ '{{ content.read_date }}' }} rated: {{ '{{ content.rating }}' }}</p>
+        </div> 
         <div
         v-else
-        v-for="content in info"
+        v-for="content in info" :key="content.id"
         >
             <div class="line"></div>
             <h2>{{ '{{ content.name }}'}} </h2>
@@ -32,6 +40,20 @@
             <h3>Level: {{ '{{ content.level }}'}} </h3>
             <p>Published Date:  {{ '{{ content.pub_date }} '}} </p>
             <a v-bind:href="`${content.url}`" target="_blank">{{ '{{ content.url }} '}}</a>
+            <button id="show-modal" @click="contentClicked(content)">Read</button>
+            <modal v-if="showModal" @close="showModal = false">
+                <!--
+                  you can use custom content here to overwrite
+                  default content
+                -->
+                <iframe slot="body" id="myFrame" v-bind:src="modalData.url" style="height:70%;width:100%"></iframe>
+                <h3 slot="header">{{ '{{ modalData.name }}' }}</h3>
+            </modal>
+            <div id="rating">
+                <button v-on:click="articleRated(content.id, 'easy')" class="btn easy">Too Easy</button>
+                <button v-on:click="articleRated(content.id, 'same')" class="btn same">Just Right</button>
+                <button v-on:click="articleRated(content.id, 'hard')" class="btn hard">Too Hard</button>
+            </div>
         </div>
     </section>
   </div>
