@@ -198,15 +198,23 @@ def classify(text, user_id):
         return classifier.classify(featurized_text)
 
 
-'''if __name__== "__main__":
+if __name__== "__main__":
     #TEST
 
     #Create classifier and featureset for user #39, test_nb_user
-    create_classifier(39, 5000)
-    #Get a text from the database
+    #create_classifier(39, 5000)
+
+    #Test all texts from the database and get counts of -1, 0, and 1 scores
     with app.app_context():
         db.init_app(app)
         db.create_all()
-        test_text = Content.query.filter_by(id=1).first().body
-    #Classify a text and return the predicted category
-    print(classify(test_text, 39))'''
+
+        results_list = []
+
+        for i in range (1, 50):
+            test_text = Content.query.filter_by(id=i).first().body
+            results_list.append(classify(test_text, 39))
+
+        print("too easy count: " + str(results_list.count(-1)))
+        print("just right count: " + str(results_list.count(0)))
+        print("too difficult count: " + str(results_list.count(1)))
