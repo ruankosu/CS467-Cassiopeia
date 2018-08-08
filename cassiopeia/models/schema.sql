@@ -64,15 +64,15 @@ CREATE TABLE user_language_skill (
 
 CREATE TABLE user_sorted_content (
   UserID int NOT NULL,
-  LanguageID int NOT NULL,
-  SortedLvl int NOT NULL,
+  ContentID int NOT NULL,
+  SortedSkill int NOT NULL,
 
   FOREIGN KEY (UserID) 
     REFERENCES users(ID)
     ON UPDATE CASCADE ON DELETE RESTRICT,
 
-  FOREIGN KEY (LanguageID) 
-    REFERENCES language(ID) 
+  FOREIGN KEY (ContentID) 
+    REFERENCES content(ID) 
     ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
