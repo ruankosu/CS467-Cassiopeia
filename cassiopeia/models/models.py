@@ -25,6 +25,8 @@ class User(db.Model, UserMixin):
     feature_set = db.Column(db.PickleType, nullable=True)
     classifier = db.Column(db.PickleType, nullable=True)
     languages = db.relationship('UserLangSkill', backref='user')
+    # Allows us to get all pieces of content associate with a user on the user_sorted_content table
+    sorted_content = db.relationship('Content', secondary='user_sorted_content', backref='user', lazy='dynamic')
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
     def __repr__(self):
@@ -62,6 +64,7 @@ class Language(db.Model):
     name = db.Column(db.String(60), unique=True, nullable=False)
     iso639_1 = db.Column(db.String(2), unique=True, nullable=False)
     iso639_2 = db.Column(db.String(3), unique=True, nullable=False)
+    # Allows us to get all country items for the given language as indicated on the locale table
     countries = db.relationship('Country', secondary='locale', backref='languages', lazy='dynamic')
     # This relationship backref may not be used in practice, allows
     # us to get all users whose native language matches the lang in question
