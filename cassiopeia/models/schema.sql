@@ -62,6 +62,20 @@ CREATE TABLE user_language_skill (
     ON UPDATE CASCADE ON DELETE RESTRICT
 );
 
+CREATE TABLE user_sorted_content (
+  UserID int NOT NULL,
+  ContentID int NOT NULL,
+  SortedSkill int NOT NULL,
+
+  FOREIGN KEY (UserID) 
+    REFERENCES users(ID)
+    ON UPDATE CASCADE ON DELETE RESTRICT,
+
+  FOREIGN KEY (ContentID) 
+    REFERENCES content(ID) 
+    ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
 CREATE TABLE content_category (
   ContentID int NOT NULL,
   CategoryID int NOT NULL

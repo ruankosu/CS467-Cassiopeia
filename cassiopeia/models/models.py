@@ -79,6 +79,13 @@ locale = db.Table('locale',
     db.Column('country_code', db.String(3), db.ForeignKey('country.alpha3code'), nullable=False)
 )
 
+# User sorted content (many-to-many relationship for user and content)
+user_sorted_content = db.Table('user_sorted_content',
+        db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
+        db.Column('content_id', db.Integer, db.ForeignKey('content.id'), nullable=False),
+        db.Column('sorted_value', db.Integer, nullable=False)
+)
+
 class UserLangSkill(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, nullable=False)
     language_id = db.Column(db.Integer, db.ForeignKey('language.id'), primary_key=True, nullable=False)
