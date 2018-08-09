@@ -26,7 +26,7 @@ class User(db.Model, UserMixin):
     classifier = db.Column(db.PickleType, nullable=True)
     languages = db.relationship('UserLangSkill', backref='user')
     # Allows us to get all pieces of content associate with a user on the user_sorted_content table
-    sorted_content = db.relationship('Content', secondary='user_sorted_content', backref='user', lazy='dynamic')
+    sorted_content = db.relationship('UserSortedContent', backref='user', lazy=True)
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
     def __repr__(self):
@@ -83,11 +83,11 @@ locale = db.Table('locale',
 )
 
 # User sorted content (many-to-many relationship for user and content)
-user_sorted_content = db.Table('user_sorted_content',
-        db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
-        db.Column('content_id', db.Integer, db.ForeignKey('content.id'), nullable=False),
-        db.Column('sorted_value', db.Integer, nullable=False)
-)
+class UserSortedContent(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, nullable=False)
+    content_id = db.Column(db.Integer, db.ForeignKey('content.id'), primary_key=True, nullable=False)
+    sorted_lvl = db.Column(db.Integer, nullable=False)
+
 
 class UserLangSkill(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, nullable=False)
@@ -119,6 +119,8 @@ class Content(db.Model):
     url = db.Column(db.String(2083), nullable=False)
     body = db.Column(db.Text, nullable=False)
     level = db.Column(db.Float, nullable=False)
+    # Allows us to get all pieces of content associate with a user on the user_sorted_content table
+    sorted_content_user = db.relationship('UserSortedContent', backref='content', lazy=True)
     # Allows us to get all progress objects related to a given piece of content
     # May not be used in our app at all
     progress = db.relationship('Progress', backref='content', lazy=True)
