@@ -25,7 +25,7 @@ def response_wrapper(data, status):
 def contents_to_obj(contents, user_info=None, languages=None, categories=None):
   payload = {}
   content_arr = []
-  last_id = -1
+  last_id_next = -1
 
   # Add user info
   if user_info is not None:
@@ -36,23 +36,30 @@ def contents_to_obj(contents, user_info=None, languages=None, categories=None):
       "category": user_info["category"]
     }
 
+  payload['last_id_prev'] = list(contents)[0].id
+
   # Add content
   for c in contents:
     obj = {}
     obj["id"] = c.id
-    obj["name"] = str(c.name.decode("utf-8"))
+    obj["name"] = c.name.decode("utf-8")
     obj["language"] = str(c.language.name)
     obj["pub_date"] = datetime.strftime(c.pub_date, '%b %d, %Y')
     obj["url"] = str(c.url)
+    obj["body"] = c.body.decode("utf-8")
     obj["categories"] = [str(category.name) for category in c.categories]
     obj["level"] = c.level
     content_arr.append(obj)
-    last_id = c.id
+    payload['last_id_next'] = c.id
 
   # Add pagination and contents
-  payload['last_id'] = last_id
   payload['contents'] = content_arr
   
+  if len(list(contents)) < 20:
+    payload['last_page'] = True
+  else:
+    payload['last_page'] = False
+
   # Add language and categories
   if languages is not None and categories is not None:
     payload['user_languages'] = languages
@@ -131,14 +138,15 @@ def getArticle():
 
     # return first 20
     if int(page) == 1 and last_id is None and direction is None:
-      contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"]).limit(20).all()
+      contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"]).order_by(Content.id.desc()).limit(20).all()
       return response_wrapper(contents_to_obj(contents, user_info, user_languages, user_categories), 200)
     # return next 20 based on last_id
     if direction == "next":
-      contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id > last_id).order_by(Content.id.asc()).limit(20)     
+      contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id < last_id).order_by(Content.id.desc()).limit(20)     
     # return prev 20 based on last_id
     if direction == "prev":
-      contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id < last_id).order_by(Content.id.asc()).limit(20)
+      contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id > last_id).order_by(Content.id.asc()).limit(20)
+      contents = list(reversed(list(contents))) # reverse before returning to client. 
     
     return response_wrapper(contents_to_obj(contents, user_info), 200)
   except Exception as ex:
