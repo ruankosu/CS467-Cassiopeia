@@ -27,6 +27,7 @@ class User(db.Model, UserMixin):
     languages = db.relationship('UserLangSkill', backref='user')
     # Allows us to get all Progress entries assoc. with a given user
     progress = db.relationship('Progress', backref='user', lazy=True)
+    sorted_content = db.relationship('UserSortedContent', backref='user', lazy=True)
     def __repr__(self):
         return '<username=%r, first_name=%r, last_name=%r, email=%r>' % (self.username, self.email)
 
@@ -79,12 +80,16 @@ locale = db.Table('locale',
     db.Column('country_code', db.String(3), db.ForeignKey('country.alpha3code'), nullable=False)
 )
 
+class UserSortedContent(db.Model):
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, nullable=False)
+    content_id = db.Column(db.Integer, db.ForeignKey('content.id'), primary_key=True, nullable=False)
+    sortedSkill = db.Column(db.Integer, default=0, nullable=False)
 # User sorted content (many-to-many relationship for user and content)
-user_sorted_content = db.Table('user_sorted_content',
-        db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
-        db.Column('content_id', db.Integer, db.ForeignKey('content.id'), nullable=False),
-        db.Column('sorted_value', db.Integer, nullable=False)
-)
+# user_sorted_content = db.Table('user_sorted_content',
+#         db.Column('user_id', db.Integer, db.ForeignKey('user.id'), nullable=False),
+#         db.Column('content_id', db.Integer, db.ForeignKey('content.id'), nullable=False),
+#         db.Column('sorted_value', db.Integer, nullable=False)
+# )
 
 class UserLangSkill(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True, nullable=False)
@@ -119,6 +124,7 @@ class Content(db.Model):
     # Allows us to get all progress objects related to a given piece of content
     # May not be used in our app at all
     progress = db.relationship('Progress', backref='content', lazy=True)
+    user_sorted_content = db.relationship('UserSortedContent', backref='content', lazy=True)
 
     def __repr(self):
         return '<name=%r, pub_date=%r, url=%r, body=%r, level=%r>' % (self.name, self.pub_date, self.url, self.body, self.level)

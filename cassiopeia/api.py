@@ -10,7 +10,7 @@ from cassiopeia import db
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
 )
-from nlp import level_assignment
+from nlp import level_assignment, nlp_training
 
 # Helps handle user sessions
 from flask_login import login_user, current_user, logout_user, login_required
@@ -221,12 +221,15 @@ def after_request(response):
   return response
 
  # ---------------------------- NLP API ------------------------------------------- #
-@api.route("/train", methods = ['GET'])
+@api.route("/train", methods = ['GET']) # need to change to user id level
 @login_required
 def train_engine(response):
 
   try:
     level_assignment.assign_levels()
+    # should replace with user adjustment
+    nlp_training.refresh_content_level(current_user.id)
+    nlp_training.refresh_user_level(current_user.id)
     return response_wrapper({}), 200)
 
   except Exception as ex:
