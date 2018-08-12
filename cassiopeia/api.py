@@ -1,4 +1,8 @@
-# Article API 
+import sys, os
+proj_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+sys.path.insert(0, proj_dir)
+
+# Article API
 import json
 from datetime import datetime
 from cassiopeia.models.models import User, Content, Language, Progress
@@ -6,6 +10,7 @@ from cassiopeia import db
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
 )
+from nlp import level_assignment, nlp_training
 
 # Helps handle user sessions
 from flask_login import login_user, current_user, logout_user, login_required
@@ -13,7 +18,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 api = Blueprint('api', __name__, url_prefix='/api')
 
 # Flask response wrapper
-def response_wrapper(data, status): 
+def response_wrapper(data, status):
   response = current_app.response_class(
     response=json.dumps(data),
     status=status,
@@ -30,7 +35,7 @@ def contents_to_obj(contents, user_info=None, languages=None, categories=None):
   # Add user info
   if user_info is not None:
     payload['user_info'] = {
-      "username" : user_info["user"].username, 
+      "username" : user_info["user"].username,
       "email" : user_info["user"].email,
       "language": user_info["language"],
       "category": user_info["category"]
@@ -71,7 +76,7 @@ def contents_to_obj(contents, user_info=None, languages=None, categories=None):
 # Get total number of pages for all articles, limit 20 articles per page
 @api.route("/articles/pages", methods=['GET'])
 def getArticlePages():
-  if current_user.is_authenticated: 
+  if current_user.is_authenticated:
     mysql = db.get_db()
     rows = mysql.session.query(Content).count()
     if rows:
@@ -90,7 +95,7 @@ def getArticlePages():
 # direction - paging direction (next, prev)
 @api.route("/article", methods=['GET'])
 @login_required
-def getArticle():  
+def getArticle():
   try:
     db.get_db() # Establish database connection
 
@@ -101,7 +106,7 @@ def getArticle():
     last_id = request.args.get('last_id')
     direction = request.args.get('dir')
 
-    # Get user 
+    # Get user
     user_info = {}
     user = User.query.filter(User.id == current_user.id).first()
 
@@ -142,12 +147,14 @@ def getArticle():
       return response_wrapper(contents_to_obj(contents, user_info, user_languages, user_categories), 200)
     # return next 20 based on last_id
     if direction == "next":
+
       contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id < last_id).order_by(Content.id.desc()).limit(20)     
     # return prev 20 based on last_id
     if direction == "prev":
       contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id > last_id).order_by(Content.id.asc()).limit(20)
       contents = list(reversed(list(contents))) # reverse before returning to client. 
     
+
     return response_wrapper(contents_to_obj(contents, user_info), 200)
   except Exception as ex:
     return response_wrapper({"error": str(ex)}, 500)
@@ -155,8 +162,8 @@ def getArticle():
   return response_wrapper({"error": "Something went wrong"}, 500)
 
 # API to handle article ratings made by the user. This will feed into the Progress table.
-# The value in this table will be used for NLP and Naive Bayes learning to update the 
-# user's language skill level. 
+# The value in this table will be used for NLP and Naive Bayes learning to update the
+# user's language skill level.
 @api.route("/article/rate", methods=['POST'])
 @login_required
 def rateArticle():
@@ -204,7 +211,7 @@ def getHistory():
       obj["name"] = str(content.name.decode("utf-8"))
       obj["read_date"] = datetime.strftime(item.read_date,"%b %d %Y %H:%M:%S")
       obj["rating"] = rating_map[item.rating]
-      history.append(obj)    
+      history.append(obj)
 
     return response_wrapper(history, 200)
 
@@ -222,3 +229,20 @@ def after_request(response):
   response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
   response.headers.add('Access-Control-Allow-Credentials', 'true')
   return response
+
+ # ---------------------------- NLP API ------------------------------------------- #
+@api.route("/train", methods = ['GET']) # need to change to user id level
+@login_required
+def train_engine(response):
+
+  try:
+    level_assignment.assign_levels()
+    # should replace with user adjustment
+    nlp_training.refresh_content_level(current_user.id)
+    nlp_training.refresh_user_level(current_user.id)
+    return response_wrapper({}), 200)
+
+  except Exception as ex:
+    return response_wrapper({"error": str(ex)}, 500)
+
+  return response_wrapper({"error": "Something went wrong"}, 500)
