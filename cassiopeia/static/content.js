@@ -96,7 +96,7 @@ Vue.component('article-paginator', {
         <li v-if="settings.first_page !== true" v-on:click="prev" class="nav-item">
           <a class="nav-link" href="#">Prev</a>
         </li>
-        <li v-on:click="next" class="nav-item">
+        <li v-if="settings.last_page !== true" v-on:click="next" class="nav-item">
           <a class="nav-link" href="#">Next</a>
         </li>
       </ul>
@@ -111,9 +111,11 @@ new Vue({
     return {
       info: null,
       loading: true,
-      last_id: null,
+      last_id_prev: null,
+      last_id_next: null,
       errored: false,
       first_page: false,
+      last_page: false,
       page_number: 0,
       showHistory: false,
       showModal: false,
@@ -182,12 +184,17 @@ new Vue({
     nextPage: function() {
       this.loading = true;
       this.page_number += 1;
+
       axios
-      .get(baseUrl + '/api/article?language=' + this.userData.user_info.language + '&page=' + this.page_number + '&dir=next&last_id=' + this.last_id, {withCredentials: true})
+      .get(baseUrl + '/api/article?language=' + this.userData.user_info.language + '&page=' + this.page_number + '&dir=next&last_id=' + this.last_id_next, {withCredentials: true})
       .then(response => {
         this.info = response.data.contents;
-        this.last_id = response.data.last_id;
+        this.last_id_prev = response.data.last_id_prev;
+        this.last_id_next = response.data.last_id_next;
+
         this.first_page = false;
+        if (response.data.last_page === true) 
+          this.last_page = true;
       })
       .catch(error => {
         this.errored = true;
@@ -197,13 +204,16 @@ new Vue({
     prevPage: function() {
       this.loading = true;
       this.page_number -= 1;
+      this.last_page = false;
       if (this.page_number === 1) 
-        this.first_page = true
+        this.first_page = true;
+      
       axios
-      .get(baseUrl + '/api/article?language=' + this.userData.user_info.language + '&page=' + this.page_number + '&dir=prev&last_id=' + this.last_id, {withCredentials: true})
+      .get(baseUrl + '/api/article?language=' + this.userData.user_info.language + '&page=' + this.page_number + '&dir=prev&last_id=' + this.last_id_prev, {withCredentials: true})
       .then(response => {
         this.info = response.data.contents;
-        this.last_id = response.data.last_id;
+        this.last_id_prev = response.data.last_id_prev;
+        this.last_id_next = response.data.last_id_next;
       })
       .catch(error => {
         this.errored = true;
@@ -219,7 +229,8 @@ new Vue({
       .get(baseUrl + '/api/article?' + this.userData.user_info.language + '&page=1', {withCredentials: true})
       .then(response => {
         this.info = response.data.contents;
-        this.last_id = response.data.last_id;
+        this.last_id_prev = response.data.last_id_prev;
+        this.last_id_next = response.data.last_id_next;
         this.page_number = 1;
         this.first_page = true;
       })
@@ -231,6 +242,7 @@ new Vue({
     contentClicked: function(content) {
       this.modalData.url = content.url;
       this.modalData.name = content.name;
+      this.modalData.body = content.body;
       this.showModal = true;
     }
   },
@@ -244,7 +256,8 @@ new Vue({
       .get(baseUrl + '/api/article?page=1', {withCredentials: true})
       .then(response => {
         this.info = response.data.contents;
-        this.last_id = response.data.last_id;
+        this.last_id_prev = response.data.last_id_prev;
+        this.last_id_next = response.data.last_id_next;
         this.page_number = 1;
         this.first_page = true;
 

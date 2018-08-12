@@ -189,6 +189,7 @@ a.article:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     transition: all .3s ease;
     font-family: Helvetica, Arial, sans-serif;
+    overflow-y: initial !important
   }
   
   .modal-header h3 {
@@ -198,6 +199,7 @@ a.article:hover {
   
   .modal-body {
     margin: 20px 0;
+    overflow-y: auto;
   }
   
   .modal-default-button {

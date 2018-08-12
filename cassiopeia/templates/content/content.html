@@ -11,7 +11,7 @@
             <button class="btn btn-dark d-inline-block d-lg-none ml-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="fas fa-align-justify"></i>
             </button>
-            <article-paginator v-if="loading !== true" v-bind:settings="{last_id: last_id, first_page: first_page}"></article-paginator>
+            <article-paginator v-if="loading !== true" v-bind:settings="{last_id_prev: last_id_prev, last_id_next: last_id_next, first_page: first_page, last_page: last_page}"></article-paginator>
         </div>
     </nav>
 
@@ -46,7 +46,7 @@
                   you can use custom content here to overwrite
                   default content
                 -->
-                <iframe slot="body" id="myFrame" v-bind:src="modalData.url" style="height:70%;width:100%"></iframe>
+                <div slot="body" id="myFrame" style="height:70%;width:100%">{{ '{{ modalData.body }} '}}</div>
                 <h3 slot="header">{{ '{{ modalData.name }}' }}</h3>
             </modal>
             <div id="rating">
