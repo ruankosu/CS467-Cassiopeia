@@ -1,2 +1,5 @@
 # Virtual Environment packages
 venv/
+__pycache__
+cassiopeia/__pycache__
+cassiopeia/models/__pycache__
