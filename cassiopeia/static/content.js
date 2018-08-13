@@ -104,6 +104,30 @@ Vue.component('article-paginator', {
   `
 });
 
+Vue.component('training-button', {
+  props: ['settings'],
+  methods: {
+    trainModel: function() {
+      this.$root.$emit('trainModel');
+    },
+    classify: function() {
+      this.$root.$emit('classify');
+    }
+  },
+  template: `
+    <div id="nlp">
+      <button v-on:click="trainModel" type="button" id="trainer" class="btn btn-info">
+        <i v-bind:class="settings.classObject"></i>
+        <span>{{ settings.trainText }}</span>
+      </button>
+      <button v-on:click="classify" type="button" id="classifer" class="btn btn-info">
+        <i v-bind:class="settings.classObject"></i>
+        <span>{{ settings.classifyText }}</span>
+      </button>
+    </div>
+  `
+});
+
 // Vue Components and functions, API call with Axios
 new Vue({
   el: '#app',
@@ -133,6 +157,12 @@ new Vue({
         user_info: {username: null, email: null, language: null, category: null},
         user_categories: null,
         user_languages: null
+      },
+      trainBtnData: {
+        isLoading: false,
+        classObject: ["fas", "fa-align-left"],
+        trainText: "Train Model",
+        classifyText: "Classify Skill"
       }
     }
   },
@@ -233,6 +263,10 @@ new Vue({
         this.last_id_next = response.data.last_id_next;
         this.page_number = 1;
         this.first_page = true;
+        
+        // Set Language and skills
+        this.userData.user_categories = response.data.user_categories;
+        this.userData.user_languages = response.data.user_languages;
       })
       .catch(error => {
         this.errored = true;
@@ -244,6 +278,42 @@ new Vue({
       this.modalData.name = content.name;
       this.modalData.body = content.body;
       this.showModal = true;
+    },
+    trainModel: function() {
+      this.trainBtnData.isLoading = true;
+      this.trainBtnData.trainText = "Training...";
+
+      axios
+      .get(baseUrl + '/api/train', {withCredentials: true})
+      .then(response => {
+        console.log(response.data)
+      })
+      .catch(error => {
+        console.log(error)
+        this.errored = true;
+      })
+      .finally(() => { 
+        this.trainBtnData.isLoading = false;
+        this.trainBtnData.trainText = "Train Model";
+      });
+    },
+    classify: function() {
+      this.trainBtnData.isLoading = true;
+      this.trainBtnData.classifyText = "Classifying ...";
+
+      axios
+      .get(baseUrl + '/api/classify', {withCredentials: true})
+      .then(response => {
+        console.log(response.data)
+        this.languageSelect(this.userData.user_info.language); // Temporary pull
+      })
+      .catch(error => {
+        this.errored = true;
+      })
+      .finally(() => { 
+        this.trainBtnData.isLoading = false;
+        this.trainBtnData.classifyText = "Classify Skill";
+      });
     }
   },
   filters: {
@@ -281,6 +351,8 @@ new Vue({
     this.$root.$on('languageSelected', this.languageSelect);
     this.$root.$on('categorySelected', this.categorySelect);
     this.$root.$on('historySelected', this.getHistory);
+    this.$root.$on('trainModel', this.trainModel);
+    this.$root.$on('classify', this.classify);
   }
 });
   

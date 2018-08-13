@@ -20,7 +20,7 @@ proj_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0, proj_dir)
 
 from cassiopeia.models.models import db, User, Progress, Content
-from flask import Flask, current_app
+from flask import Flask, current_app, g
 from flask_sqlalchemy import SQLAlchemy
 
 # Custom App to load to cassiopeia_prod database, need utf8mb4 for emoji support
@@ -80,13 +80,13 @@ def get_words(entries):
 ''' Checks body of given content for all feature words
     Assigns true/false - denoting feature word is in content '''
 def find_words(word_list, feature_words):
-
+    
     # Translate from binary to utf-8 and strip punctuation
-    word_list_b = word_list.split()
+    word_list_b = word_list
     word_list = []
     for word in word_list_b:
-        word = word.decode('utf8')
-        word = word.strip('.,!?-*();:\'\"[]{}\\')
+        # word = word.decode('utf8')
+        word = str(word).strip('.,!?-*();:\'\"[]{}\\')
         word_list.append(word)
 
     # Create a set of words from the given content
@@ -126,7 +126,7 @@ def create_classifier(user_id, word_ct):
 
     # Create a list of n most frequent words where n = word_ct
     feature_words = list(all_words.keys())[:word_ct]
-
+    
     # Create featuresets
     featuresets = create_featuresets(feature_words, user_ratings)
 
@@ -168,17 +168,21 @@ def create_classifier(user_id, word_ct):
 ''' Returns the predicted category (-1, 0, 1)
     and takes the text to classify
     and the user's id as arguments '''
-def classify(text, user_id):
+def classify(text, user_id, classifier=None, feature_set=None):
 
     # Retrieve classifier from db
     with app.app_context():
-        db.init_app(app)
-        db.create_all()
-        pickled_classifier = User.query.filter_by(id=user_id).first().classifier
-        classifier = pickle.loads(pickled_classifier)
-        # Retrieve dictionary from db
-        pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
-        feature_set = pickle.loads(pickled_feature_set)
+        if "classifier" is None:  
+            db.init_app(app)
+            db.create_all()              
+            pickled_classifier = User.query.filter_by(id=user_id).first().classifier
+            classifier = pickle.loads(pickled_classifier)
+        
+        if "feature_set" is None:
+            db.init_app(app)
+            db.create_all()
+            pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
+            feature_set = pickle.loads(pickled_feature_set)
 
         # Featurize the text to classify
         featurized_text = find_words(text, feature_set)

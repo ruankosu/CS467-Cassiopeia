@@ -16,10 +16,7 @@
     </nav>
 
     <h1>Articles</h1>
-    <button type="button" id="trainer" class="btn btn-info">
-        <i class="fas fa-align-left"></i>
-        <span>Train Model</span>
-    </button>
+    <training-button v-bind:settings="trainBtnData"></training-button>
 
     <section v-if="errored">
         <p>We're sorry, we're not able to retrieve this information at the moment, please try back later</p>

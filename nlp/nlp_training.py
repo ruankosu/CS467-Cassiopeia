@@ -1,9 +1,9 @@
-import sys, os
+import sys, os, pickle
 proj_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
 sys.path.insert(0, proj_dir)
 
-from cassiopeia.models.models import db, Content, UserLangSkill, UserSortedContent
-from flask import Flask, current_app
+from cassiopeia.models.models import db, Content, UserLangSkill, UserSortedContent, User
+from flask import Flask, current_app, g
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
 from nlp.naive_bayes import classify
@@ -24,17 +24,26 @@ def refresh_content_level(current_user_id):
         #only curate for the last 50 articles
         content_text = Content.query.order_by(Content.id.desc()).limit(50).all()
 
+        if "classifier" not in g:
+            pickled_classifier = User.query.filter_by(id=current_user_id).first().classifier
+            g.classifier = pickle.loads(pickled_classifier)
+
+        if "feature_sure" not in g:
+            pickled_feature_set = User.query.filter_by(id=current_user_id).first().feature_set
+            g.feature_set = pickle.loads(pickled_feature_set)
+
         # classify and create as a new entry
         for content_item in content_text:
-            result = classify(content_item.body, current_user_id)
+            result = classify(content_item.body, current_user_id, g.classifier, g.feature_set)
+
             # only the suitable entries are added
             if result == 0:
-                print(current_user_id, content_item.id, result)
+                # print(current_user_id, content_item.id, result)
                 article_entry = UserSortedContent(user_id=current_user_id, content_id=content_item.id, sortedSkill=result)
                 db.session.add(article_entry)
-                db.session.commit()
+        
         # commit the change
-        #db.session.commit()
+        db.session.commit()
 
 def refresh_user_level(current_user_id):
     with app.app_context():

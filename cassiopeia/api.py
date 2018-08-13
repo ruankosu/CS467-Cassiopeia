@@ -10,7 +10,7 @@ from cassiopeia import db
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, current_app
 )
-from nlp import level_assignment, nlp_training
+from nlp import level_assignment, nlp_training, naive_bayes
 
 # Helps handle user sessions
 from flask_login import login_user, current_user, logout_user, login_required
@@ -230,17 +230,34 @@ def after_request(response):
   response.headers.add('Access-Control-Allow-Credentials', 'true')
   return response
 
- # ---------------------------- NLP API ------------------------------------------- #
+# ---------------------------- NLP API ------------------------------------------- #
 @api.route("/train", methods = ['GET']) # need to change to user id level
 @login_required
-def train_engine(response):
+def train_engine():
+  try:
+    user = User.query.filter(User.id == current_user.id).first()
+    
+    # Create feature_set and classifier for specific user, default word count for model is 5000
+    naive_bayes.create_classifier(user.id, 5000)
+
+    return response_wrapper({"message": "Training on content is successful. Model created for user."}, 200)
+
+  except Exception as ex:
+    return response_wrapper({"error": str(ex)}, 500)
+
+  return response_wrapper({"error": "Something went wrong"}, 500)
+
+@api.route("/classify", methods = ['GET']) # need to change to user id level
+@login_required
+def classify_content():
 
   try:
-    level_assignment.assign_levels()
+    # level_assignment.assign_levels()
     # should replace with user adjustment
     nlp_training.refresh_content_level(current_user.id)
     nlp_training.refresh_user_level(current_user.id)
-    return response_wrapper({}), 200)
+
+    return response_wrapper({"message": "Classification for user is successful"}, 200)
 
   except Exception as ex:
     return response_wrapper({"error": str(ex)}, 500)

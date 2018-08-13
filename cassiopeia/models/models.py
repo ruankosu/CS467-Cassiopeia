@@ -122,10 +122,10 @@ class Content(db.Model):
     level = db.Column(db.Float, nullable=False)
     # Allows us to get all pieces of content associate with a user on the user_sorted_content table
     sorted_content_user = db.relationship('UserSortedContent', backref='content', lazy=True)
+
     # Allows us to get all progress objects related to a given piece of content
     # May not be used in our app at all
     progress = db.relationship('Progress', backref='content', lazy=True)
-    user_sorted_content = db.relationship('UserSortedContent', backref='content', lazy=True)
 
     def __repr(self):
         return '<name=%r, pub_date=%r, url=%r, body=%r, level=%r>' % (self.name, self.pub_date, self.url, self.body, self.level)
