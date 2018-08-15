@@ -90,10 +90,9 @@ def find_words(text, feature_words):
             word = word.decode('utf8')
             word = word.strip('.,!?-*();:\'\"[]{}\\')
             word_list.append(word)
+    #else assume text is a list 
     else:
-        word_list = text # assume text is a list 
-
-    print(word_list[:20])
+        word_list = text
 
     # Create a set of words from the given content
     words = set(word_list)
@@ -136,25 +135,16 @@ def create_classifier(user_id, word_ct):
     # Create featuresets
     featuresets = create_featuresets(feature_words, user_ratings)
 
-    # Define training and testing sets by
-    # splitting set of all reviews in half
-    # training_set = featuresets[:feature_ct]
-    # testing_set = featuresets[feature_ct:]
-
     # Train Naive-Bayes Algorithm
     classifier = nltk.NaiveBayesClassifier.train(featuresets)
 
-    # Show accuracy and 15 most informative features
-    # print("Naive Bayes Algo accuracy percent: ", (nltk.classify.accuracy(classifier, testing_set)) * 100)
-    # classifier.show_most_informative_features(15)
-
-    # Pickle the dictionary for later use
+    # Pickle the feature set for later use
     saved_dictionary = pickle.dumps(feature_words)
 
     # Pickle classifier for later use
     saved_classifier = pickle.dumps(classifier)
 
-    # Save dictionary and classifier in user's row in DB
+    # Save feature set and classifier in user's row in DB
     with app.app_context():
         db.init_app(app)
         db.create_all()
@@ -170,21 +160,35 @@ def create_classifier(user_id, word_ct):
     return
 
 
-# classify()
-''' Returns the predicted category (-1, 0, 1)
-    and takes the text to classify
-    and the user's id as arguments '''
-def classify(text, user_id):
-
+# get_classifier() retrieves the classifier for a 
+# user from the database and returns it
+def get_classifier(user_id):
     # Retrieve classifier from db
     with app.app_context():
         db.init_app(app)
         db.create_all()              
         pickled_classifier = User.query.filter_by(id=user_id).first().classifier
         classifier = pickle.loads(pickled_classifier)
+        return classifier
+
+
+# get_feature_set() retrieves the feature_set for
+# a user from the database and returns it
+def get_feature_set(user_id):
+    # Retrieve classifier from db
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()              
         pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
         feature_set = pickle.loads(pickled_feature_set)
+        return feature_set
 
+
+# classify()
+''' Returns the predicted category (-1, 0, 1)
+    and takes the text to classify
+    and the user's id as arguments '''
+def classify(text, classifier, feature_set):
         # Featurize the text to classify
         featurized_text = find_words(text, feature_set)
 
@@ -197,20 +201,24 @@ if __name__== "__main__":
     #TEST
 
     #Create classifier and featureset for user #28, test_nb_user
-    create_classifier(39, 5000)
+    # create_classifier(28, 5000)
 
     #Test all texts from the database and get counts of -1, 0, and 1 scores
+    content_text = []
     with app.app_context():
         db.init_app(app)
         db.create_all()
+        content_text = Content.query.order_by(Content.id.desc()).limit(50).all()
+    
+    classifier = get_classifier(28)
+    feature_set = get_feature_set(28)
+    results_list = []
 
-        results_list = []
+    for content_item in content_text:
+        result = classify(content_item.body, classifier, feature_set)
+        print(result)
+        results_list.append(result)
 
-        for i in range (1, 3):
-            test_text = Content.query.filter_by(id=i).first().body
-            print(type(test_text))
-            results_list.append(classify(test_text, 39))
-
-        print("too easy count: " + str(results_list.count(-1)))
-        print("just right count: " + str(results_list.count(0)))
-        print("too difficult count: " + str(results_list.count(1)))
+    print("too easy count: " + str(results_list.count(-1)))
+    print("just right count: " + str(results_list.count(0)))
+    print("too difficult count: " + str(results_list.count(1)))
