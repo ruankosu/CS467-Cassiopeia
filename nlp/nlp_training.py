@@ -24,13 +24,11 @@ def refresh_content_level(current_user_id):
         #only curate for the last 50 articles
         content_text = Content.query.order_by(Content.id.desc()).limit(50).all()
 
-        if "classifier" not in g:
-            pickled_classifier = User.query.filter_by(id=current_user_id).first().classifier
-            g.classifier = pickle.loads(pickled_classifier)
+        pickled_classifier = User.query.filter_by(id=current_user_id).first().classifier
+        g.classifier = pickle.loads(pickled_classifier)
 
-        if "feature_set" not in g:
-            pickled_feature_set = User.query.filter_by(id=current_user_id).first().feature_set
-            g.feature_set = pickle.loads(pickled_feature_set)
+        pickled_feature_set = User.query.filter_by(id=current_user_id).first().feature_set
+        g.feature_set = pickle.loads(pickled_feature_set)
 
         # classify and create as a new entry
         for content_item in content_text:

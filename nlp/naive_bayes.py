@@ -83,7 +83,7 @@ def find_words(text, feature_words):
     
     word_list = []
     # Check if text is a string
-    if isinstance(text, str): 
+    if isinstance(text, bytes): 
         # Translate from binary to utf-8 and strip punctuation
         word_list_b = text.split()
         for word in word_list_b:
