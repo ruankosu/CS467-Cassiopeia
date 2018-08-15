@@ -28,7 +28,7 @@ def refresh_content_level(current_user_id):
             pickled_classifier = User.query.filter_by(id=current_user_id).first().classifier
             g.classifier = pickle.loads(pickled_classifier)
 
-        if "feature_sure" not in g:
+        if "feature_set" not in g:
             pickled_feature_set = User.query.filter_by(id=current_user_id).first().feature_set
             g.feature_set = pickle.loads(pickled_feature_set)
 

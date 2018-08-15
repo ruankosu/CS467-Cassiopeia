@@ -1,4 +1,4 @@
-var baseUrl = 'http://127.0.0.1:8000'
+var baseUrl = 'http://35.227.172.224'
 const EventBus = new Vue();
 
 Vue.component('modal', {
@@ -339,6 +339,9 @@ new Vue({
         this.userData.user_info.email = response.data.user_info.email;    
         this.userData.user_info.language = response.data.user_info.language;      // Default language     
         this.userData.user_info.category = response.data.user_info.category;      // Default category
+      	
+	if (response.data.last_page === true)
+	  this.last_page = true;	      
       })
       .catch(error => {
         this.errored = true;

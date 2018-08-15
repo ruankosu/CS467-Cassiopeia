@@ -79,15 +79,19 @@ def get_words(entries):
 # find_words()
 ''' Checks body of given content for all feature words
     Assigns true/false - denoting feature word is in content '''
-def find_words(word_list, feature_words):
+def find_words(text, feature_words):
     
-    # Translate from binary to utf-8 and strip punctuation
-    word_list_b = word_list
     word_list = []
-    for word in word_list_b:
-        # word = word.decode('utf8')
-        word = str(word).strip('.,!?-*();:\'\"[]{}\\')
-        word_list.append(word)
+    # Check if text is a string
+    if isinstance(text, str): 
+        # Translate from binary to utf-8 and strip punctuation
+        word_list_b = text.split()
+        for word in word_list_b:
+            word = word.decode('utf8')
+            word = word.strip('.,!?-*();:\'\"[]{}\\')
+            word_list.append(word)
+    else:
+        word_list = text # assume text is a list 
 
     # Create a set of words from the given content
     words = set(word_list)
