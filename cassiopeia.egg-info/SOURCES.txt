@@ -1,0 +1,12 @@
+README.rst
+setup.cfg
+cassiopeia/__init__.py
+cassiopeia/config.py
+cassiopeia/dbsetup.py
+cassiopeia/util.py
+cassiopeia.egg-info/PKG-INFO
+cassiopeia.egg-info/SOURCES.txt
+cassiopeia.egg-info/dependency_links.txt
+cassiopeia.egg-info/not-zip-safe
+cassiopeia.egg-info/requires.txt
+cassiopeia.egg-info/top_level.txt

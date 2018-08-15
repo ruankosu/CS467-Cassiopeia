@@ -93,6 +93,8 @@ def find_words(text, feature_words):
     else:
         word_list = text # assume text is a list 
 
+    print(word_list[:20])
+
     # Create a set of words from the given content
     words = set(word_list)
 
@@ -172,21 +174,16 @@ def create_classifier(user_id, word_ct):
 ''' Returns the predicted category (-1, 0, 1)
     and takes the text to classify
     and the user's id as arguments '''
-def classify(text, user_id, classifier=None, feature_set=None):
+def classify(text, user_id):
 
     # Retrieve classifier from db
     with app.app_context():
-        if "classifier" is None:  
-            db.init_app(app)
-            db.create_all()              
-            pickled_classifier = User.query.filter_by(id=user_id).first().classifier
-            classifier = pickle.loads(pickled_classifier)
-        
-        if "feature_set" is None:
-            db.init_app(app)
-            db.create_all()
-            pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
-            feature_set = pickle.loads(pickled_feature_set)
+        db.init_app(app)
+        db.create_all()              
+        pickled_classifier = User.query.filter_by(id=user_id).first().classifier
+        classifier = pickle.loads(pickled_classifier)
+        pickled_feature_set = User.query.filter_by(id=user_id).first().feature_set
+        feature_set = pickle.loads(pickled_feature_set)
 
         # Featurize the text to classify
         featurized_text = find_words(text, feature_set)
@@ -199,8 +196,8 @@ def classify(text, user_id, classifier=None, feature_set=None):
 if __name__== "__main__":
     #TEST
 
-    #Create classifier and featureset for user #39, test_nb_user
-    #create_classifier(39, 5000)
+    #Create classifier and featureset for user #28, test_nb_user
+    create_classifier(39, 5000)
 
     #Test all texts from the database and get counts of -1, 0, and 1 scores
     with app.app_context():
@@ -209,8 +206,9 @@ if __name__== "__main__":
 
         results_list = []
 
-        for i in range (1, 51):
+        for i in range (1, 3):
             test_text = Content.query.filter_by(id=i).first().body
+            print(type(test_text))
             results_list.append(classify(test_text, 39))
 
         print("too easy count: " + str(results_list.count(-1)))
