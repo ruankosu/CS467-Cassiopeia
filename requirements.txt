@@ -12,3 +12,4 @@ flask-login
 bcrypt
 flask_bcrypt
 flask_wtf
+pickle
