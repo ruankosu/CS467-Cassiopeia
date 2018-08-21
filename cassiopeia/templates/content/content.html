@@ -34,7 +34,7 @@
             <div class="line"></div>
             <h2>{{ '{{ content.name }}'}} </h2>
             <h3>{{ '{{ content.language }}'}} </h3>
-            <p>Published Date:  {{ '{{ content.pub_date }} '}} </p>
+	    <p>Published Date:  {{ '{{ content.pub_date }} '}} - Readability Score: {{ '{{ content.level }}' }} </p>
             <a v-bind:href="`${content.url}`" target="_blank">{{ '{{ content.url }} '}}</a>
             <button id="show-modal" @click="contentClicked(content)">Read</button>
             <modal v-if="showModal" @close="showModal = false">
