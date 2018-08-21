@@ -24,7 +24,7 @@ def refresh_content_level(current_user_id):
         db.create_all()
 
         # clear user_sorted_content table
-        user_content = UserSortedContent.query.filter(user_id=current_user_id).all()
+        user_content = UserSortedContent.query.filter_by(user_id=current_user_id).all()
         for item in user_content:
             db.session.delete(item)
         db.session.commit()
