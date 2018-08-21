@@ -23,6 +23,12 @@ def refresh_content_level(current_user_id):
         db.init_app(app)
         db.create_all()
 
+        # clear user_sorted_content table
+        user_content = UserSortedContent.query.filter(user_id=current_user_id).all()
+        for item in user_content:
+            db.session.delete(item)
+        db.session.commit()
+
         #only curate for all articles
         content_text = Content.query.all()
 
@@ -37,7 +43,7 @@ def refresh_content_level(current_user_id):
         # classify and create as a new entry
         for content_item in content_text:
             result = classify(content_item.body, classifier, feature_set)
-            print(result)
+            # print(result)
             # only the suitable entries are added
             if result == 0:
                 article_entry = UserSortedContent(user_id=current_user_id, content_id=content_item.id, sortedSkill=result)

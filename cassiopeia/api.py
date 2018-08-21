@@ -257,8 +257,7 @@ def classify_content():
     nlp_training.refresh_content_level(current_user.id)
     user_level_refresh_result = nlp_training.refresh_user_level(current_user.id)
     if user_level_refresh_result == -1:
-        return response_wrapper({"error": "Not enough articles rated for a score update."}, 204)
-    
+      return response_wrapper({"message": "Not enough articles rated for a score update."}, 200)
     return response_wrapper({"message": "Classification for user is successful"}, 200)
 
   except Exception as ex:
