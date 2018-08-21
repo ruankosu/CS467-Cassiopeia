@@ -29,7 +29,7 @@ def language(user_id):
 
 	# For now, we'll just defaul to Chinese, English, and German. We'll need to update this route if we want to support all languages
 	# default_countries = Country.query.filter((Country.alpha3code=='CHN') | (Country.alpha3code=='GBR') | (Country.alpha3code=='DEU')).all()
-    default_countries = Country.query.filter(Country.alpha3code=='GBR').all()
+	default_countries = Country.query.filter(Country.alpha3code=='GBR').all()
 	languages = [{'name': c.languages[0].name, 'flag': c.flag_image} for c in default_countries]
 	return render_template('signup/language.html', langs=languages)
 
