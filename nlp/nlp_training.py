@@ -65,8 +65,9 @@ def refresh_user_level(current_user_id):
 
         # add user skill to the user_lang_skill table
         user = UserLangSkill.query.filter_by(user_id=current_user_id).first()
-        if std_deviation:
-            user = UserLangSkill(user_id=current_user_id, language_id=815, skill=std_deviation)
+        if std_deviation > 0:
+            # user = UserLangSkill(user_id=current_user_id, language_id=815, skill=std_deviation)
+            user.skill = std_deviation
             db.session.add(user)
             db.session.commit()
 
