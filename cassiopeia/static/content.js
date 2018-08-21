@@ -53,14 +53,6 @@ Vue.component('content-sidebar', {
     <nav id="sidebar">
         <ul class="list-unstyled components">
             <p>{{ settings.user_info.username }}</p>
-            <li class="active">
-                <a href="#categorySubmenu" data-toggle="collapse" aria-expanded="false" aria-controls="categorySubmenu" class="dropdown-toggle">Categories</a>
-                <ul class="collapse list-unstyled" id="categorySubmenu">
-                  <li v-for="category in settings.user_categories" :key="category.name">
-                    <a href="#">{{ category.name }} - Coming Soon!</a>
-                  </li>
-                </ul>
-            </li>
             <li>
                 <a href="#languageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Languages</a>
                 <ul class="collapse list-unstyled" id="languageSubmenu">
@@ -71,9 +63,6 @@ Vue.component('content-sidebar', {
             </li>
             <li>
                 <a href="#" v-on:click="historySelected()">History</a>
-            </li>
-            <li>
-                <a href="#">Settings</a>
             </li>
         </ul>
     </nav>
