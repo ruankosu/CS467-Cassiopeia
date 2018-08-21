@@ -70,6 +70,7 @@ def refresh_user_level(current_user_id):
             user.skill = std_deviation
             db.session.add(user)
             db.session.commit()
+            return 0
         else:
             return -1
 

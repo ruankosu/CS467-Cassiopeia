@@ -255,9 +255,10 @@ def classify_content():
     # level_assignment.assign_levels()
     # should replace with user adjustment
     nlp_training.refresh_content_level(current_user.id)
-    if nlp_training.refresh_user_level(current_user.id) == -1:
+    user_level_refresh_result = nlp_training.refresh_user_level(current_user.id)
+    if user_level_refresh_result == -1:
         return response_wrapper({"error": "Not enough articles rated for a score update."}, 204)
-
+    
     return response_wrapper({"message": "Classification for user is successful"}, 200)
 
   except Exception as ex:
