@@ -56,8 +56,8 @@ Vue.component('content-sidebar', {
             <li class="active">
                 <a href="#categorySubmenu" data-toggle="collapse" aria-expanded="false" aria-controls="categorySubmenu" class="dropdown-toggle">Categories</a>
                 <ul class="collapse list-unstyled" id="categorySubmenu">
-                  <li v-for="category in settings.user_categories" :key="category.name" v-on:click="categorySelected(category.name)">
-                    <a href="#">{{ category.name }}</a>
+                  <li v-for="category in settings.user_categories" :key="category.name">
+                    <a href="#">{{ category.name }} - Coming Soon!</a>
                   </li>
                 </ul>
             </li>
@@ -256,13 +256,18 @@ new Vue({
 
       this.userData.user_info.language = iso; // Set newly selected language
       axios
-      .get(baseUrl + '/api/article?' + this.userData.user_info.language + '&page=1', {withCredentials: true})
+      .get(baseUrl + '/api/article?' + 'language=' + this.userData.user_info.language + '&page=1', {withCredentials: true})
       .then(response => {
         this.info = response.data.contents;
         this.last_id_prev = response.data.last_id_prev;
         this.last_id_next = response.data.last_id_next;
         this.page_number = 1;
         this.first_page = true;
+
+	if (response.data.last_page === true)
+	  this.last_page = true;
+	else 
+	  this.last_page = false;	      
         
         // Set Language and skills
         this.userData.user_categories = response.data.user_categories;
