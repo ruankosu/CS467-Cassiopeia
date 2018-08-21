@@ -58,7 +58,7 @@ def refresh_user_level(current_user_id):
         for entry in user_curated_article_levels:
             level = (Content.query.filter_by(id=entry.content_id).first()).level
             sqd_deviations += level ** 2
-        if not len(user_curated_article_levels):
+        if len(user_curated_article_levels) > 0:
             std_deviation = (sqd_deviations / len(user_curated_article_levels)) ** 0.5
         else:
             std_deviation = 0
