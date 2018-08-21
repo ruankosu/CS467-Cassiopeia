@@ -28,7 +28,8 @@ def language(user_id):
 			return redirect(url_for('signup.skill', user_id=user_id, lang_id=language.id))
 
 	# For now, we'll just defaul to Chinese, English, and German. We'll need to update this route if we want to support all languages
-	default_countries = Country.query.filter((Country.alpha3code=='CHN') | (Country.alpha3code=='GBR') | (Country.alpha3code=='DEU')).all()
+	# default_countries = Country.query.filter((Country.alpha3code=='CHN') | (Country.alpha3code=='GBR') | (Country.alpha3code=='DEU')).all()
+    efault_countries = Country.query.filter(Country.alpha3code=='GBR').all()
 	languages = [{'name': c.languages[0].name, 'flag': c.flag_image} for c in default_countries]
 	return render_template('signup/language.html', langs=languages)
 
@@ -61,7 +62,7 @@ def interests(user_id):
 			mysql.session.commit()
 			return redirect(url_for("content.index"))
 
-	results = Category.query.all()
+    # results = Category.query.all()
+	results = Category.query.filter(Category.name=='Sports').all()
 	categories = [{'name': r.name, 'icon': r.icon_img} for r in results]
 	return render_template('signup/interests.html', categories=categories)
-
