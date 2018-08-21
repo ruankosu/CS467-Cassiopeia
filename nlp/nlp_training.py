@@ -23,8 +23,8 @@ def refresh_content_level(current_user_id):
         db.init_app(app)
         db.create_all()
 
-        #only curate for the last 50 articles
-        content_text = Content.query.order_by(Content.id.desc()).all()
+        #only curate for all articles
+        content_text = Content.query.all()
 
         # pickled_classifier = User.query.filter_by(id=current_user_id).first().classifier
         # g.classifier = pickle.loads(pickled_classifier)
@@ -39,8 +39,8 @@ def refresh_content_level(current_user_id):
             result = classify(content_item.body, classifier, feature_set)
             print(result)
             # only the suitable entries are added
-            # if result == 0 or result == 1:
-            article_entry = UserSortedContent(user_id=current_user_id, content_id=content_item.id, sortedSkill=result)
+            if result == 0:
+                article_entry = UserSortedContent(user_id=current_user_id, content_id=content_item.id, sortedSkill=result)
             db.session.add(article_entry)
         # commit the change
         db.session.commit()
