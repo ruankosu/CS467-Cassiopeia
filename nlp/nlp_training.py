@@ -24,7 +24,7 @@ def refresh_content_level(current_user_id):
         db.create_all()
 
         #only curate for the last 50 articles
-        content_text = Content.query.order_by(Content.id.desc()).limit(50).all()
+        content_text = Content.query.order_by(Content.id.desc()).all()
 
         # pickled_classifier = User.query.filter_by(id=current_user_id).first().classifier
         # g.classifier = pickle.loads(pickled_classifier)
