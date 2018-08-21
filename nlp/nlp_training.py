@@ -39,9 +39,9 @@ def refresh_content_level(current_user_id):
             result = classify(content_item.body, classifier, feature_set)
             print(result)
             # only the suitable entries are added
-            if result == 0 or result == 1:
-                article_entry = UserSortedContent(user_id=current_user_id, content_id=content_item.id, sortedSkill=result)
-                db.session.add(article_entry)
+            # if result == 0 or result == 1:
+            article_entry = UserSortedContent(user_id=current_user_id, content_id=content_item.id, sortedSkill=result)
+            db.session.add(article_entry)
         # commit the change
         db.session.commit()
 
