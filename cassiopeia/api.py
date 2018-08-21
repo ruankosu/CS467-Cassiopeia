@@ -59,7 +59,7 @@ def contents_to_obj(contents, user_info=None, languages=None, categories=None):
 
   # Add pagination and contents
   payload['contents'] = content_arr
-  
+
   if len(list(contents)) < 20:
     payload['last_page'] = True
   else:
@@ -148,12 +148,12 @@ def getArticle():
     # return next 20 based on last_id
     if direction == "next":
 
-      contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id < last_id).order_by(Content.id.desc()).limit(20)     
+      contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id < last_id).order_by(Content.id.desc()).limit(20)
     # return prev 20 based on last_id
     if direction == "prev":
       contents = Content.query.filter(Content.language.has(Language.iso639_2 == language["iso"]), Content.level <= language["skill"], Content.id > last_id).order_by(Content.id.asc()).limit(20)
-      contents = list(reversed(list(contents))) # reverse before returning to client. 
-    
+      contents = list(reversed(list(contents))) # reverse before returning to client.
+
 
     return response_wrapper(contents_to_obj(contents, user_info), 200)
   except Exception as ex:
@@ -236,7 +236,7 @@ def after_request(response):
 def train_engine():
   try:
     user = User.query.filter(User.id == current_user.id).first()
-    
+
     # Create feature_set and classifier for specific user, default word count for model is 5000
     naive_bayes.create_classifier(user.id, 5000)
 
@@ -255,7 +255,8 @@ def classify_content():
     # level_assignment.assign_levels()
     # should replace with user adjustment
     nlp_training.refresh_content_level(current_user.id)
-    nlp_training.refresh_user_level(current_user.id)
+    if nlp_training.refresh_user_level(current_user.id) == -1:
+        return response_wrapper({"error": "Not enough articles rated for a score update."}, 204)
 
     return response_wrapper({"message": "Classification for user is successful"}, 200)
 
