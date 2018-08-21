@@ -58,16 +58,22 @@ def refresh_user_level(current_user_id):
         for entry in user_curated_article_levels:
             level = (Content.query.filter_by(id=entry.content_id).first()).level
             sqd_deviations += level ** 2
-        std_deviation = (sqd_deviations / len(user_curated_article_levels)) ** 0.5
+        if not len(user_curated_article_levels):
+            std_deviation = (sqd_deviations / len(user_curated_article_levels)) ** 0.5
+        else:
+            std_deviation = 0
 
         # add user skill to the user_lang_skill table
         user = UserLangSkill.query.filter_by(user_id=current_user_id).first()
-        if not user:
+        if std_deviation:
             user = UserLangSkill(user_id=current_user_id, language_id=815, skill=std_deviation)
-        else:
-            user.skill = std_deviation
-        db.session.add(user)
-        db.session.commit()
+            db.session.add(user)
+            db.session.commit()
+
+        #     else:
+        #     user.skill = std_deviation
+        # db.session.add(user)
+        # db.session.commit()
         #
         # for level in user_curated_article_levels:
         #     sqd_deviations += level[0] ** 2
